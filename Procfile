@@ -1,1 +1,1 @@
-web: node dist/server.js
+ "server": "tsc && nodemon src/server.ts"
