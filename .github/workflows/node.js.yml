@@ -37,7 +37,7 @@ jobs:
       run: npm ci
 
     - name: Build
-      run: npm run build
+      run: npm i && npm run build
 
     # Uncomment the following section if you have tests
     # - name: Test
