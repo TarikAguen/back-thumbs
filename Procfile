@@ -1,1 +1,1 @@
- "server": "tsc && nodemon src/server.ts"
+web: npm run server
