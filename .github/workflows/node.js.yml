@@ -9,10 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-       run:
-         working-directory: ./api/
-
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
@@ -21,8 +17,6 @@ jobs:
     - uses: actions/checkout@v4
       name: Checkout code
 
-    # - name: Change to api directory
-    #   run: cd api
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
