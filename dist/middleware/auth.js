@@ -7,7 +7,7 @@ var __importDefault =
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authenticateJWT = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const auth_1 = require("./routes/auth");
+const auth_1 = require("../routes/auth");
 const authenticateJWT = (req, res, next) => {
   var _a;
   const token =
