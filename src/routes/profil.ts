@@ -61,7 +61,7 @@ router.post ("/profilupdate", async (req: Request, res: Response) => {
     res.status(500).send("Error updating user");
   }
 });
-router.delete("/delete-profil", authenticateJWT, async (req: Request, res: Response) => {
+router.delete("/delete-profil", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
   
   try {
