@@ -77,7 +77,7 @@ router.delete("/delete-profil", async (req: Request, res: Response) => {
 });
 
 router.get("/details", async (req: Request, res: Response) => {
-  const userId = res.locals.user.userI;
+  const userId = res.locals.user.userId;
 
   try {
     const user = await User.findById(userId).select('-password');
