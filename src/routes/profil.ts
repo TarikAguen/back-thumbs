@@ -76,5 +76,20 @@ router.delete("/delete-profil", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/details", async (req: Request, res: Response) => {
+  const userId = res.locals.user.userI;
+
+  try {
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving user information");
+  }
+});
+
 
 export default router;
