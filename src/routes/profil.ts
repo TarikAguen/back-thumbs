@@ -61,5 +61,22 @@ router.post ("/profilupdate", async (req: Request, res: Response) => {
     res.status(500).send("Error updating user");
   }
 });
+router.delete("/delete-profil/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
 
+  try {
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).send("User not found");
+    }
+
+    res.json({
+      message: "User deleted successfully",
+      user: deletedUser,
+    });
+  } catch (err) {
+    res.status(500).send("Error deleting user");
+  }
+});
 export default router;
