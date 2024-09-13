@@ -6,23 +6,32 @@ import User from "../models/User";
 const router = Router();
 const revokedTokens: Set<string> = new Set();
 
+
 router.post("/register", async (req, res) => {
-    
-    try {
-    const { email, password, firstName, lastName, age, description, interests } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashedPassword, firstName, lastName, age, description, interests });
-    await newUser.save();
-    res.status(201).send("User registered");
+  try {
+      const { email, password, firstName, lastName, age, interest } = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new User({
+          email,
+          password: hashedPassword,
+          firstName,
+          lastName,
+          age,
+          interest
+      });
+      await newUser.save();
+      res.status(201). send("User registered");
   } catch (err: any) {
-    console.error(err);
-    if (err.code === 11000) {
-      res.status(400).send("Email already exists");
-    } else {
-      res.status(500).send("Error registering user");
-    }
+      console.error(err);
+      if (err.code === 11000) {
+          res.status(400).send("Email already exists");
+      } else {
+          res.status(500).send("Error registering user");
+      }
   }
 });
+
+
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
