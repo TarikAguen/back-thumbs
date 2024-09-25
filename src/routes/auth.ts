@@ -9,7 +9,7 @@ const revokedTokens: Set<string> = new Set();
 
 router.post("/register", async (req, res) => {
   try {
-      const { email, password, firstName, lastName, description, age, interests, photo, genre, location } = req.body;
+      const { email, password, firstName, lastName, description, age, interests, genre, location } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = new User({
           email,
