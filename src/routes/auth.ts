@@ -1,9 +1,12 @@
-import { Router, Request, Response, NextFunction } from "express";
+import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import multer from "multer";
 import User from "../models/User";
+import { s3 } from "../config/aws-config";
 
 const router = Router();
+const upload = multer({ dest: "uploads/" }); // Gérer les photos
 const revokedTokens: Set<string> = new Set();
 
 
@@ -35,8 +38,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-
-
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -55,14 +56,13 @@ router.post("/login", async (req, res) => {
       message: `User connected: ${email}`,
       token,
       user: {
-        email: user.email
+        email: user.email,
       },
     });
   } else {
     res.status(401).send("Invalid credentials");
   }
 });
-
 
 router.post("/logout", (req, res) => {
   const token = req.header("Authorization")?.split(" ")[1];
