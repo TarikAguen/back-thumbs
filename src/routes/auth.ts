@@ -1,12 +1,9 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import multer from "multer";
 import User from "../models/User";
-import { s3 } from "../config/aws-config";
 
 const router = Router();
-const upload = multer({ dest: "uploads/" }); // Gérer les photos
 const revokedTokens: Set<string> = new Set();
 
 
