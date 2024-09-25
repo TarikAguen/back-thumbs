@@ -22,7 +22,6 @@ router.post("/register", async (req, res) => {
           description,
           age,
           interests,
-          photo,
           genre,
           location
       });
