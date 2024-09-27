@@ -44,6 +44,7 @@ router.post("/register", upload.single('photo'), async (req, res) => {
       location,
       photo: uploadResult.Location,  // URL publique de la photo dans S3
     });
+    console.log(req.file);
 
     await newUser.save();
     res.status(201).send("User registered");
