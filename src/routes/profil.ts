@@ -5,7 +5,7 @@ const router = Router();
 
 router.put("/update-profil", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
-    const { firstName, lastName, age, description, interests } = req.body;
+    const { firstName, lastName, birthdate, description, interests, location } = req.body;
   
     try {
       const updatedUser = await User.findByIdAndUpdate(
@@ -13,8 +13,9 @@ router.put("/update-profil", async (req: Request, res: Response) => {
         {
           firstName,
           lastName,
-          age,
+          birthdate,
           description,
+          location,
           interests,
         },
         { new: true }
@@ -35,14 +36,15 @@ router.put("/update-profil", async (req: Request, res: Response) => {
 
 router.post ("/profilupdate", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
-  const { firstName, lastName, age, description, interests} = req.body;
+  const { firstName, lastName, birthdate, description, interests, localisation} = req.body;
   try {
     const postUser = await User.findByIdAndUpdate(
       userId,
       {
         firstName,
         lastName,
-        age,
+        birthdate,
+        location,
         description,
         interests,
       },
