@@ -94,19 +94,25 @@ router.get("/details", async (req: Request, res: Response) => {
   }
 });
 
+
 router.get("/interests", async (req: Request, res: Response) => {
   try {
-    const interests = await Interest.find().select('nom thematique');
-    
+    const interestDocument = await Interest.findOne();
+
+    if (!interestDocument) {
+      return res.status(404).send("Aucun centre d'intérêt trouvé");
+    }
+
     res.json({
       message: "Liste des centres d'intérêts",
-      interests: interests
+      interests: interestDocument.centres_interets
     });
   } catch (err) {
     console.error(err);
     res.status(500).send("Erreur lors de la récupération des centres d'intérêts");
   }
 });
+
 router.get("/user/interests", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId; 
 

@@ -1,14 +1,23 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-interface IInterest extends Document {
+interface IInterestItem {
+  id: number;
   nom: string;
   thematique: string;
 }
 
+interface IInterest extends Document {
+  centres_interets: IInterestItem[];
+}
 
 const InterestSchema: Schema = new Schema({
-  nom: { type: String, required: true },
-  thematique: { type: String, required: true }
+  centres_interets: [
+    {
+      id: { type: Number, required: true },
+      nom: { type: String, required: true },
+      thematique: { type: String, required: true }
+    }
+  ]
 }, {
   collection: "interests"
 });
