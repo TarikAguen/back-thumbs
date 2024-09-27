@@ -6,31 +6,37 @@ import User from "../models/User";
 const router = Router();
 const revokedTokens: Set<string> = new Set();
 
-
 router.post("/register", async (req, res) => {
   try {
-      const { email, password, firstName, lastName, description, birthdate, interests, genre, location } = req.body;
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new User({
-          email,
-          password: hashedPassword,
-          firstName,
-          lastName,
-          description,
-          birthdate,
-          interests,
-          genre,
-          location
-      });
-      await newUser.save();
-      res.status(201). send("User registered");
+    const { email, password, firstName, lastName, description, birthdate, interests, genre, location } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      description,
+      birthdate,
+      interests,
+      genre,
+      location
+    });
+    await newUser.save();
+
+    // Renvoyer l'utilisateur avec les champs virtuels inclus
+    const userWithVirtuals = newUser.toJSON();
+    
+    res.status(201).json({
+      message: "User registered",
+      user: userWithVirtuals // Inclure les champs virtuels comme 'age'
+    });
   } catch (err: any) {
-      console.error(err);
-      if (err.code === 11000) {
-          res.status(400).send("Email already exists");
-      } else {
-          res.status(500).send("Error registering user");
-      }
+    console.error(err);
+    if (err.code === 11000) {
+      res.status(400).send("Email already exists");
+    } else {
+      res.status(500).send("Error registering user");
+    }
   }
 });
 
@@ -48,12 +54,14 @@ router.post("/login", async (req, res) => {
       process.env.JWT_SECRET!,
       { expiresIn: "1h" }
     );
+
+    // Convertir l'utilisateur en JSON pour inclure les champs virtuels
+    const userWithVirtuals = user.toJSON();
+
     res.json({
       message: `User connected: ${email}`,
       token,
-      user: {
-        email: user.email,
-      },
+      user: userWithVirtuals // Inclure les champs virtuels comme 'age'
     });
   } else {
     res.status(401).send("Invalid credentials");
