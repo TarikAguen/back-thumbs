@@ -53,6 +53,7 @@ router.post("/register", upload.single('photo'), async (req, res) => {
     if (err.code === 11000) {
       res.status(400).send("Email already exists");
     } else {
+      console.log(req.file);
       res.status(500).send("Error registering user");
     }
   }
