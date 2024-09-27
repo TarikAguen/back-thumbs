@@ -12,7 +12,7 @@ const revokedTokens: Set<string> = new Set();
 
 router.post("/register", upload.single('photo'), async (req, res) => {
   try {
-    const { email, password, firstName, lastName, description, birthdate, interests, genre, location } = req.body;
+    const { email, password, firstName, lastName, description, birthdate, interests, genre, location, photo } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Vérifie si un fichier a été téléchargé
