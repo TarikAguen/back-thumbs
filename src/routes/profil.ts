@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import User from "../models/User";
+import Interest from "../models/Interest";
 
 const router = Router();
 
@@ -93,5 +94,36 @@ router.get("/details", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/interests", async (req: Request, res: Response) => {
+  try {
+    const interests = await Interest.find().select('nom thematique');
+    
+    res.json({
+      message: "Liste des centres d'intérêts",
+      interests: interests
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération des centres d'intérêts");
+  }
+});
+router.get("/user/interests", async (req: Request, res: Response) => {
+  const userId = res.locals.user.userId; 
 
+  try {
+    const user = await User.findById(userId).populate('interests', 'nom thematique');
+    
+    if (!user) {
+      return res.status(404).send("Utilisateur non trouvé");
+    }
+
+    res.json({
+      message: "Centres d'intérêts de l'utilisateur",
+      interests: user.interests  // Cela affichera les centres d'intérêts avec leurs noms et thématiques
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération des centres d'intérêts de l'utilisateur");
+  }
+});
 export default router;
