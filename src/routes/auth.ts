@@ -12,6 +12,8 @@ const revokedTokens: Set<string> = new Set();
 
 router.post("/register", upload.single("photo"), async (req, res) => {
   try {
+    console.log("Données reçues :", req.body);
+    console.log("Fichier reçu :", req.file);
     const {
       email,
       password,
@@ -66,8 +68,9 @@ router.post("/register", upload.single("photo"), async (req, res) => {
     if (err.code === 11000) {
       res.status(400).send("Email already exists");
     } else {
-      console.log(req.file);
-      res.status(500).send("Error registering user");
+      console.log("Données reçues :", req.body);
+      console.log("Fichier reçu :", req.file);
+      res.status(500).send("Error registering user" + err.message);
     }
   }
 });
