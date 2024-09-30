@@ -40,7 +40,7 @@ router.post("/register", upload.single("photo"), async (req, res) => {
       Key: `${Date.now()}-${req.file.originalname}`, // Nom unique pour chaque fichier
       Body: req.file.buffer, // Le fichier dans le buffer
       ContentType: req.file.mimetype,
-      ACL: "public-read", // Permettre un accès public à la photo
+      // ACL: "public-read", // Permettre un accès public à la photo
     };
 
     const uploadResult = await s3.upload(params).promise();
