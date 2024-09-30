@@ -29,7 +29,7 @@ router.post("/register", upload.single("photo"), async (req, res) => {
 
     // Vérifie si un fichier a été téléchargé
     if (!req.file) {
-      return res.status(400).send("Photo is required");
+      return res.status(201).send("Photo is required" + res.json + req.file);
     }
 
     // Upload de la photo sur S3
