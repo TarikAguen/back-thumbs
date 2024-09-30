@@ -29,23 +29,20 @@ router.post("/register", upload.single("photo"), async (req, res) => {
     } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Vérifie si un fichier a été téléchargé
     if (!req.file) {
       return res.status(201).send("Photo is required" + res.json + req.file);
     }
 
-    // Upload de la photo sur S3
     const params = {
       Bucket: process.env.S3_BUCKET_NAME!,
-      Key: `${Date.now()}-${req.file.originalname}`, // Nom unique pour chaque fichier
-      Body: req.file.buffer, // Le fichier dans le buffer
+      Key: `${Date.now()}-${req.file.originalname}`,
+      Body: req.file.buffer,
       ContentType: req.file.mimetype,
       // ACL: "public-read", // Permettre un accès public à la photo
     };
 
     const uploadResult = await s3.upload(params).promise();
 
-    // Crée un nouvel utilisateur en incluant l'URL de la photo uploadée sur S3
     const newUser = new User({
       email,
       password: hashedPassword,
@@ -57,7 +54,7 @@ router.post("/register", upload.single("photo"), async (req, res) => {
       interests,
       genre,
       location,
-      photo: uploadResult.Location, // URL publique de la photo dans S3
+      photo: uploadResult.Location,
     });
     console.log(req.file);
 
@@ -96,7 +93,7 @@ router.post("/login", async (req, res) => {
     res.json({
       message: `User connected: ${email}`,
       token,
-      user: userWithVirtuals, // Inclure les champs virtuels comme 'age'
+      user: userWithVirtuals, // Inclure le champ virtuel 'age'
     });
   } else {
     res.status(401).send("Invalid credentials");

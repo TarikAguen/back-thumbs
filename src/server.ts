@@ -9,6 +9,7 @@ dotenv.config();
 const app: Express = express();
 const PORT: string | number = process.env.PORT || 3001;
 app.use(cors());
+app.use(express.json());
 
 mongoose
   .connect(process.env.MONGO_URI!)
@@ -19,7 +20,6 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Wesh le sang!");
 });
 app.use("/auth", authRoutes);
-app.use(express.json());
 app.use("/profil", authenticateJWT, profilRoutes);
 
 app.listen(PORT, () => {
