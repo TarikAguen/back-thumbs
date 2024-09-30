@@ -1,52 +1,77 @@
 import { Router, Request, Response, NextFunction } from "express";
 import User from "../models/User";
 import Interest from "../models/Interest";
+import bcrypt from "bcrypt";
 
 const router = Router();
 
 router.put("/update-profil", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
-    const { firstName, lastName, birthdate, description, interests, location } = req.body;
-  
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        {
-          firstName,
-          lastName,
-          birthdate,
-          description,
-          location,
-          interests,
-        },
-        { new: true }
-      );
-  
-      if (!updatedUser) {
-        return res.status(404).send("User not found");
-      }
-  
-      res.json({
-        message: "User updated successfully",
-        user: updatedUser,
-      });
-    } catch (err) {
-      res.status(500).send("Error updating user");
-    }
-  });
+  const {
+    firstName,
+    password,
+    lastName,
+    birthdate,
+    description,
+    presentation,
+    interests,
+    location,
+  } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-router.post ("/profilupdate", async (req: Request, res: Response) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        firstName,
+        password: hashedPassword,
+        lastName,
+        birthdate,
+        description,
+        presentation,
+        location,
+        interests,
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send("User not found");
+    }
+
+    res.json({
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+  } catch (err) {
+    res.status(500).send("Error updating user");
+  }
+});
+
+router.post("/profilupdate", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
-  const { firstName, lastName, birthdate, description, interests, localisation} = req.body;
+  const {
+    firstName,
+    lastName,
+    password,
+    birthdate,
+    description,
+    presentation,
+    interests,
+    localisation,
+  } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
   try {
     const postUser = await User.findByIdAndUpdate(
       userId,
       {
         firstName,
+        password: hashedPassword,
         lastName,
         birthdate,
         location,
         description,
+        presentation,
         interests,
       },
       { new: true }
@@ -66,7 +91,7 @@ router.post ("/profilupdate", async (req: Request, res: Response) => {
 });
 router.delete("/delete-profil", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
-  
+
   try {
     const deletedUser = await User.findByIdAndDelete(userId);
     if (!deletedUser) {
@@ -83,7 +108,7 @@ router.get("/details", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
 
   try {
-    const user = await User.findById(userId).select('-password');
+    const user = await User.findById(userId).select("-password");
     if (!user) {
       return res.status(404).send("User not found");
     }
@@ -93,7 +118,6 @@ router.get("/details", async (req: Request, res: Response) => {
     res.status(500).send("Error retrieving user information");
   }
 });
-
 
 router.get("/interests", async (req: Request, res: Response) => {
   try {
@@ -105,31 +129,40 @@ router.get("/interests", async (req: Request, res: Response) => {
 
     res.json({
       message: "Liste des centres d'intérêts",
-      interests: interestDocument.centres_interets
+      interests: interestDocument.centres_interets,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Erreur lors de la récupération des centres d'intérêts");
+    res
+      .status(500)
+      .send("Erreur lors de la récupération des centres d'intérêts");
   }
 });
 
 router.get("/user/interests", async (req: Request, res: Response) => {
-  const userId = res.locals.user.userId; 
+  const userId = res.locals.user.userId;
 
   try {
-    const user = await User.findById(userId).populate('interests', 'nom thematique');
-    
+    const user = await User.findById(userId).populate(
+      "interests",
+      "nom thematique"
+    );
+
     if (!user) {
       return res.status(404).send("Utilisateur non trouvé");
     }
 
     res.json({
       message: "Centres d'intérêts de l'utilisateur",
-      interests: user.interests  // Cela affichera les centres d'intérêts avec leurs noms et thématiques
+      interests: user.interests, // Cela affichera les centres d'intérêts avec leurs noms et thématiques
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Erreur lors de la récupération des centres d'intérêts de l'utilisateur");
+    res
+      .status(500)
+      .send(
+        "Erreur lors de la récupération des centres d'intérêts de l'utilisateur"
+      );
   }
 });
 export default router;

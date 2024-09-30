@@ -10,9 +10,21 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const revokedTokens: Set<string> = new Set();
 
-router.post("/register", upload.single('photo'), async (req, res) => {
+router.post("/register", upload.single("photo"), async (req, res) => {
   try {
-    const { email, password, firstName, lastName, description, birthdate, interests, genre, location, photo } = req.body;
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      description,
+      presentation,
+      birthdate,
+      interests,
+      genre,
+      location,
+      photo,
+    } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Vérifie si un fichier a été téléchargé
@@ -23,10 +35,10 @@ router.post("/register", upload.single('photo'), async (req, res) => {
     // Upload de la photo sur S3
     const params = {
       Bucket: process.env.S3_BUCKET_NAME!,
-      Key: `${Date.now()}-${req.file.originalname}`,  // Nom unique pour chaque fichier
-      Body: req.file.buffer,  // Le fichier dans le buffer
+      Key: `${Date.now()}-${req.file.originalname}`, // Nom unique pour chaque fichier
+      Body: req.file.buffer, // Le fichier dans le buffer
       ContentType: req.file.mimetype,
-      ACL: 'public-read',  // Permettre un accès public à la photo
+      ACL: "public-read", // Permettre un accès public à la photo
     };
 
     const uploadResult = await s3.upload(params).promise();
@@ -38,11 +50,12 @@ router.post("/register", upload.single('photo'), async (req, res) => {
       firstName,
       lastName,
       description,
+      presentation,
       birthdate,
       interests,
       genre,
       location,
-      photo: uploadResult.Location,  // URL publique de la photo dans S3
+      photo: uploadResult.Location, // URL publique de la photo dans S3
     });
     console.log(req.file);
 
@@ -80,7 +93,7 @@ router.post("/login", async (req, res) => {
     res.json({
       message: `User connected: ${email}`,
       token,
-      user: userWithVirtuals // Inclure les champs virtuels comme 'age'
+      user: userWithVirtuals, // Inclure les champs virtuels comme 'age'
     });
   } else {
     res.status(401).send("Invalid credentials");
