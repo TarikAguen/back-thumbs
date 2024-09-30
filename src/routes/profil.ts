@@ -2,93 +2,144 @@ import { Router, Request, Response, NextFunction } from "express";
 import User from "../models/User";
 import Interest from "../models/Interest";
 import bcrypt from "bcrypt";
+import multer from "multer";
+import s3 from "../config/s3";
+import { v4 as uuidv4 } from "uuid";
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage() });
+router.put(
+  "/update-profil",
+  upload.single("photo"),
+  async (req: Request, res: Response) => {
+    const userId = res.locals.user.userId;
+    const {
+      firstName,
+      password,
+      lastName,
+      birthdate,
+      description,
+      presentation,
+      interests,
+      location,
+    } = req.body;
 
-router.put("/update-profil", async (req: Request, res: Response) => {
-  const userId = res.locals.user.userId;
-  const {
-    firstName,
-    password,
-    lastName,
-    birthdate,
-    description,
-    presentation,
-    interests,
-    location,
-  } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+      let hashedPassword = undefined;
+      if (password) {
+        hashedPassword = await bcrypt.hash(password, 10);
+      }
 
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        firstName,
-        password: hashedPassword,
-        lastName,
-        birthdate,
-        description,
-        presentation,
-        location,
-        interests,
-      },
-      { new: true }
-    );
+      let photoUrl = undefined;
+      if (req.file) {
+        const params = {
+          Bucket: process.env.S3_BUCKET_NAME!,
+          Key: `${uuidv4()}-${req.file.originalname}`,
+          Body: req.file.buffer,
+          ContentType: req.file.mimetype,
+        };
 
-    if (!updatedUser) {
-      return res.status(404).send("User not found");
+        const uploadResult = await s3.upload(params).promise();
+        photoUrl = uploadResult.Location;
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          firstName,
+          password: hashedPassword || undefined,
+          lastName,
+          birthdate,
+          description,
+          presentation,
+          location,
+          interests,
+          ...(photoUrl && { photo: photoUrl }), // Met à jour la photo uniquement si elle est fournie
+        },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+
+      res.json({
+        message: "User updated successfully",
+        user: updatedUser,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Error updating user");
     }
-
-    res.json({
-      message: "User updated successfully",
-      user: updatedUser,
-    });
-  } catch (err) {
-    res.status(500).send("Error updating user");
   }
-});
+);
 
-router.post("/profilupdate", async (req: Request, res: Response) => {
-  const userId = res.locals.user.userId;
-  const {
-    firstName,
-    lastName,
-    password,
-    birthdate,
-    description,
-    presentation,
-    interests,
-    localisation,
-  } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  try {
-    const postUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        firstName,
-        password: hashedPassword,
-        lastName,
-        birthdate,
-        location,
-        description,
-        presentation,
-        interests,
-      },
-      { new: true }
-    );
+router.post(
+  "/profilupdate",
+  upload.single("photo"),
+  async (req: Request, res: Response) => {
+    const userId = res.locals.user.userId;
+    const {
+      firstName,
+      lastName,
+      password,
+      birthdate,
+      description,
+      presentation,
+      interests,
+      location,
+    } = req.body;
 
-    if (!postUser) {
-      return res.status(404).send("User not found");
+    try {
+      let hashedPassword = undefined;
+      if (password) {
+        hashedPassword = await bcrypt.hash(password, 10);
+      }
+
+      // Upload de la nouvelle photo si elle est fournie
+      let photoUrl = undefined;
+      if (req.file) {
+        const params = {
+          Bucket: process.env.S3_BUCKET_NAME!,
+          Key: `${uuidv4()}-${req.file.originalname}`,
+          Body: req.file.buffer,
+          ContentType: req.file.mimetype,
+        };
+
+        const uploadResult = await s3.upload(params).promise();
+        photoUrl = uploadResult.Location;
+      }
+
+      const postUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          firstName,
+          password: hashedPassword || undefined,
+          lastName,
+          birthdate,
+          description,
+          presentation,
+          interests,
+          location,
+          ...(photoUrl && { photo: photoUrl }), // Met à jour la photo uniquement si elle est fournie
+        },
+        { new: true }
+      );
+
+      if (!postUser) {
+        return res.status(404).send("User not found");
+      }
+
+      res.json({
+        message: "User updated successfully",
+        user: postUser,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Error updating user");
     }
-
-    res.json({
-      message: "User updated successfully",
-      user: postUser,
-    });
-  } catch (err) {
-    res.status(500).send("Error updating user");
   }
-});
+);
 router.delete("/delete-profil", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
 
