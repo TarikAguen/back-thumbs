@@ -23,23 +23,25 @@ router.post("/register", upload.single("photo"), async (req, res) => {
       interests,
       genre,
       location,
-      photo,
     } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // if (!req.file) {
-    //   return res.status(201).send("Photo is required" + res.json + req.file);
-    // }
+  
+    let photoUrl = undefined;
 
-    const params = {
-      Bucket: process.env.S3_BUCKET_NAME!,
-      Key: `${Date.now()}-${req.file.originalname}`,
-      Body: req.file.buffer,
-      ContentType: req.file.mimetype,
-      // ACL: "public-read", // Permettre un accès public à la photo
-    };
+    // if file uploaded
+    if (req.file) {
+      const params = {
+        Bucket: process.env.S3_BUCKET_NAME!,
+        Key: `${Date.now()}-${req.file.originalname}`,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+        // ACL: "public-read", // Permettre un accès public à la photo
+      };
 
-    const uploadResult = await s3.upload(params).promise();
+      const uploadResult = await s3.upload(params).promise();
+      photoUrl = uploadResult.Location; 
+
 
     const newUser = new User({
       email,
@@ -52,9 +54,8 @@ router.post("/register", upload.single("photo"), async (req, res) => {
       interests,
       genre,
       location,
-      photo: uploadResult.Location,
+      photo: photoUrl,
     });
-    console.log(req.file);
 
     await newUser.save();
     res.status(201).send("User registered");
@@ -85,13 +86,12 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // Convertir l'utilisateur en JSON pour inclure les champs virtuels
     const userWithVirtuals = user.toJSON();
 
     res.json({
       message: `User connected: ${email}`,
       token,
-      user: userWithVirtuals, // Inclure le champ virtuel 'age'
+      user: userWithVirtuals,
     });
   } else {
     res.status(401).send("Invalid credentials");
