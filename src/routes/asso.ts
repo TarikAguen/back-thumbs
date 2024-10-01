@@ -1,60 +1,96 @@
 import { Router, Request, Response, NextFunction } from "express";
-import User from "../models/User";
+import Asso from "../models/Asso";
 
 const router = Router();
 
 router.put("/update-asso", async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
-    const { firstName, lastName, age, description, interests } = req.body;
-  
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        {
-          firstName,
-          lastName,
-          age,
-          description,
-          interests,
-        },
-        { new: true }
-      );
-  
-      if (!updatedUser) {
-        return res.status(404).send("User not found");
-      }
-  
-      res.json({
-        message: "User updated successfully",
-        user: updatedUser,
-      });
-    } catch (err) {
-      res.status(500).send("Error updating user");
-    }
-  });
+  const {
+    email,
+    password,
+    nameasso,
+    siret,
+    logo,
+    description,
+    website,
+    telephone,
+    location,
+    creationdate,
+    interests,
+  } = req.body;
 
-router.post ("/profilupdate", async (req: Request, res: Response) => {
-  const userId = res.locals.user.userId;
-  const { firstName, lastName, age, description, interests} = req.body;
   try {
-    const postUser = await User.findByIdAndUpdate(
+    const updatedUser = await Asso.findByIdAndUpdate(
       userId,
       {
-        firstName,
-        lastName,
-        age,
+        email,
+        password,
+        nameasso,
+        siret,
+        logo,
         description,
+        website,
+        telephone,
+        location,
+        creationdate,
+        interests,
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send("Asso not found");
+    }
+
+    res.json({
+      message: "Asso updated successfully",
+      user: updatedUser,
+    });
+  } catch (err) {
+    res.status(500).send("Error updating asso");
+  }
+});
+
+router.post("/profilupdate", async (req: Request, res: Response) => {
+  const userId = res.locals.user.userId;
+  const {
+    email,
+    password,
+    nameasso,
+    siret,
+    logo,
+    description,
+    website,
+    telephone,
+    location,
+    creationdate,
+    interests,
+  } = req.body;
+  try {
+    const postUser = await Asso.findByIdAndUpdate(
+      userId,
+      {
+        email,
+        password,
+        nameasso,
+        siret,
+        logo,
+        description,
+        website,
+        telephone,
+        location,
+        creationdate,
         interests,
       },
       { new: true }
     );
 
     if (!postUser) {
-      return res.status(404).send("User not found");
+      return res.status(404).send("Asso not found");
     }
 
     res.json({
-      message: "User updated successfully",
+      message: "Asso updated successfully",
       user: postUser,
     });
   } catch (err) {
