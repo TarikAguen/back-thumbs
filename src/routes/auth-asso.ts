@@ -11,7 +11,7 @@ const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Route pour l'inscription
-router.post("/register-asso", upload.single("photo"), registerAsso);
+router.post("/register-asso", upload.single("logo"), registerAsso);
 
 // Route pour la connexion
 router.post("/login", loginAsso);
