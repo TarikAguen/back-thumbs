@@ -5,13 +5,16 @@ interface IParticipant {
   firstName: string;
   lastName: string;
 }
+
 interface IEvent extends Document {
   eventName?: string;
   organisator?: string;
   description?: string;
   subdescription?: string;
   photo?: string;
-  location?: string;
+  city?: string;
+  postalcode?: number;
+  adress?: string;
   participants?: IParticipant[];
   interests?: string[];
 }
@@ -22,7 +25,9 @@ const EventSchema: Schema = new Schema(
     organisator: { type: String, required: true },
     description: { type: String, required: true },
     photo: { type: String },
-    location: { type: String },
+    city: { type: String },
+    postalcode: { type: Number },
+    adress: { type: String },
     subdescription: { type: String },
     participants: {
       type: [
@@ -39,5 +44,5 @@ const EventSchema: Schema = new Schema(
   { collection: "event" }
 );
 
-const User = mongoose.model<IEvent>("Event", EventSchema);
-export default User;
+const Event = mongoose.model<IEvent>("Event", EventSchema);
+export default Event;

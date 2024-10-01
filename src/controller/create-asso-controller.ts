@@ -17,7 +17,9 @@ export const registerAsso = async (req: Request, res: Response) => {
       presentation,
       website,
       telephone,
-      location,
+      city,
+      postalcode,
+      adress,
       creationdate,
       interests,
     } = req.body;
@@ -48,7 +50,9 @@ export const registerAsso = async (req: Request, res: Response) => {
       presentation,
       website,
       telephone,
-      location,
+      city,
+      postalcode,
+      adress,
       creationdate,
       interests,
       photo: photoUrl, // Inclure la photo si elle existe

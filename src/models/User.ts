@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 interface IUser extends Document {
+  type?: string;
   email: string;
   password: string;
   firstName?: string;
@@ -12,11 +13,14 @@ interface IUser extends Document {
   interests?: string[];
   photo?: string;
   genre?: "homme" | "femme" | "autre";
-  location?: string;
+  city?: string;
+  postalcode?: number;
+  adress?: string;
 }
 
 const UserSchema: Schema = new Schema(
   {
+    type: { type: String, default: "user" },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     firstName: { type: String, required: true },
@@ -27,7 +31,9 @@ const UserSchema: Schema = new Schema(
     interests: { type: [String] },
     photo: { type: String },
     genre: { type: String, enum: ["homme", "femme", "autre"] },
-    location: { type: String },
+    city: { type: String, required: true },
+    postalcode: { type: Number, required: true },
+    adress: { type: String, required: true },
   },
   {
     collection: "users",

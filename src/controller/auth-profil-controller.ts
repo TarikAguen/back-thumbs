@@ -17,7 +17,9 @@ export const register = async (req: Request, res: Response) => {
       birthdate,
       interests,
       genre,
-      location,
+      city,
+      postalcode,
+      adress,
     } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -46,7 +48,9 @@ export const register = async (req: Request, res: Response) => {
       birthdate,
       interests,
       genre,
-      location,
+      city,
+      postalcode,
+      adress,
       photo: photoUrl,
     });
 
