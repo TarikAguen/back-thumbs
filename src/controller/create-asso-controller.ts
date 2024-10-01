@@ -116,4 +116,4 @@ export const checkRevokedToken = (req: Request, res: Response, next: any) => {
 };
 
 // Set pour stocker les tokens révoqués
-const revokedTokens: Set<string> = new Set();
+export const revokedTokens: Set<string> = new Set();
