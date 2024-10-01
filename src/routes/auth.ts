@@ -12,8 +12,6 @@ const revokedTokens: Set<string> = new Set();
 
 router.post("/register", upload.single("photo"), async (req, res) => {
   try {
-    console.log("Données reçues :", req.body);
-    console.log("Fichier reçu :", req.file);
     const {
       email,
       password,
@@ -29,9 +27,9 @@ router.post("/register", upload.single("photo"), async (req, res) => {
     } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (!req.file) {
-      return res.status(201).send("Photo is required" + res.json + req.file);
-    }
+    // if (!req.file) {
+    //   return res.status(201).send("Photo is required" + res.json + req.file);
+    // }
 
     const params = {
       Bucket: process.env.S3_BUCKET_NAME!,
