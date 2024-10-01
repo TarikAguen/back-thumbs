@@ -26,7 +26,6 @@ router.post("/register", upload.single("photo"), async (req, res) => {
     } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-  
     let photoUrl = undefined;
 
     // if file uploaded
@@ -40,8 +39,8 @@ router.post("/register", upload.single("photo"), async (req, res) => {
       };
 
       const uploadResult = await s3.upload(params).promise();
-      photoUrl = uploadResult.Location; 
-
+      photoUrl = uploadResult.Location;
+    }
 
     const newUser = new User({
       email,
