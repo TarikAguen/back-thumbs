@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { updateAsso, profilUpdate } from "../controller/update-asso"; // Importation du contrôleur
+import { updateAsso, profilUpdate } from "../controller/update-asso-controller"; // Importation du contrôleur
 
 const router = Router();
 

@@ -5,7 +5,7 @@ import {
   loginAsso,
   logoutAsso,
   checkRevokedToken,
-} from "../controller/create-asso";
+} from "../controller/create-asso-controller";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
