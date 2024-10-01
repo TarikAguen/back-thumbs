@@ -21,7 +21,7 @@ mongoose
   .catch((err) => console.log(err));
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Wesh le sang!");
+  res.send("Api Thumbs");
 });
 app.use("/auth", authRoutes);
 app.use("/auth-asso", authAssoRoutes);
