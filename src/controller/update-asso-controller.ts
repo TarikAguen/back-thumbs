@@ -140,3 +140,17 @@ export const profilUpdate = async (req: Request, res: Response) => {
     res.status(500).send("Error updating user");
   }
 };
+export const getAssoDetails = async (req: Request, res: Response) => {
+  const userId = res.locals.user.userId;
+
+  try {
+    const asso = await Asso.findById(userId).select("-password");
+    if (!asso) {
+      return res.status(404).send("Asso not found");
+    }
+    res.json(asso);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving asso information");
+  }
+};
