@@ -55,7 +55,7 @@ router.post("/register", upload.single("photo"), async (req, res) => {
       location,
       photo: photoUrl,
     });
-
+    console.log("Nouvel utilisateur à sauvegarder :", newUser);
     await newUser.save();
     res.status(201).send("User registered");
   } catch (err: any) {
