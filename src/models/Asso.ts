@@ -7,6 +7,7 @@ interface IAsso extends Document {
   siret?: string;
   logo?: string;
   description?: string;
+  presentation?: string;
   website?: string;
   telephone?: string;
   location?: string;
@@ -24,6 +25,7 @@ const AssoSchema: Schema = new Schema(
     location: { type: String, required: true },
     telephone: { type: String, required: true },
     description: { type: String },
+    presentation: { type: String },
     website: { type: Date },
     creationdate: { type: String },
     interests: { type: [String] },
