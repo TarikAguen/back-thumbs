@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import { authenticateJWT } from "./middleware/auth";
-import authRoutes, { checkRevokedToken } from "./routes/auth";
+import authRoutes from "./routes/auth";
 import authAssoRoutes from "./routes/auth-asso";
 import profilRoutes from "./routes/profil";
 import AssoRoutes from "./routes/asso";
