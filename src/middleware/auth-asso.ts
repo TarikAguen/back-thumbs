@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { revokedTokens } from "../controller/auth-profil-controller";
+import { revokedTokens } from "../controller/create-asso-controller";
 
-export const authenticateJWT = (
+export const authenticateJWTAsso = (
   req: Request,
   res: Response,
   next: NextFunction

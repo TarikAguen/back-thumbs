@@ -107,11 +107,7 @@ export const logoutAsso = (req: Request, res: Response) => {
 };
 
 // Middleware pour vérifier la révocation des tokens
-export const checkRevokedToken = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const checkRevokedToken = (req: Request, res: Response, next: any) => {
   const token = req.header("Authorization")?.split(" ")[1];
   if (token && revokedTokens.has(token)) {
     return res.status(401).send("Token has been revoked");

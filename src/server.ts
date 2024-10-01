@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth";
 import authAssoRoutes from "./routes/auth-asso";
 import profilRoutes from "./routes/profil";
 import AssoRoutes from "./routes/asso";
+import { authenticateJWTAsso } from "./middleware/auth-asso";
 dotenv.config();
 const app: Express = express();
 const PORT: string | number = process.env.PORT || 3001;
@@ -24,7 +25,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/auth", authRoutes);
 app.use("/auth-asso", authAssoRoutes);
 app.use("/profil", authenticateJWT, profilRoutes);
-app.use("/asso", authenticateJWT, AssoRoutes);
+app.use("/asso", authenticateJWTAsso, AssoRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
