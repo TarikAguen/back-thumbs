@@ -12,7 +12,6 @@ export const registerAsso = async (req: Request, res: Response) => {
       password,
       nameasso,
       siret,
-      logo,
       description,
       presentation,
       website,
@@ -45,7 +44,6 @@ export const registerAsso = async (req: Request, res: Response) => {
       password: hashedPassword,
       nameasso,
       siret,
-      logo,
       description,
       presentation,
       website,
@@ -55,7 +53,7 @@ export const registerAsso = async (req: Request, res: Response) => {
       adress,
       creationdate,
       interests,
-      photo: photoUrl, // Inclure la photo si elle existe
+      logo: photoUrl, // Inclure la photo si elle existe
     });
 
     console.log("Nouvel asso à sauvegarder :", newAsso);
