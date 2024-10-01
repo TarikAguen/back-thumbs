@@ -4,6 +4,8 @@ import {
   updateProfil,
   deleteProfil,
   getProfilDetails,
+  getAllInterests,
+  getUserInterest,
 } from "../controller/update-profil-controller"; // Importation du contrôleur
 
 const router = Router();
@@ -20,5 +22,8 @@ router.delete("/delete-profil", deleteProfil);
 
 // Route pour récupérer les détails du profil
 router.get("/details", getProfilDetails);
+
+router.get("/interests", getAllInterests);
+router.get("/user-interests", getUserInterest);
 
 export default router;

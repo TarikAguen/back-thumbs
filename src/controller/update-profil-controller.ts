@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 import bcrypt from "bcrypt";
+import Interest from "../models/Interest";
 import s3 from "../config/s3";
 import { v4 as uuidv4 } from "uuid";
 
@@ -102,5 +103,51 @@ export const getProfilDetails = async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Error retrieving user information");
+  }
+};
+export const getAllInterests = async (req: Request, res: Response) => {
+  try {
+    const interestDocument = await Interest.findOne();
+
+    if (!interestDocument) {
+      return res.status(404).send("Aucun centre d'intérêt trouvé");
+    }
+
+    res.json({
+      message: "Liste des centres d'intérêts",
+      interests: interestDocument.centres_interets,
+    });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send("Erreur lors de la récupération des centres d'intérêts");
+  }
+};
+
+export const getUserInterest = async (req: Request, res: Response) => {
+  const userId = res.locals.user.userId;
+
+  try {
+    const user = await User.findById(userId).populate(
+      "interests",
+      "nom thematique"
+    );
+
+    if (!user) {
+      return res.status(404).send("Utilisateur non trouvé");
+    }
+
+    res.json({
+      message: "Centres d'intérêts de l'utilisateur",
+      interests: user.interests, // Cela affichera les centres d'intérêts avec leurs noms et thématiques
+    });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send(
+        "Erreur lors de la récupération des centres d'intérêts de l'utilisateur"
+      );
   }
 };
