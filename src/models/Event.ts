@@ -1,5 +1,10 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+interface IParticipant {
+  id: mongoose.Types.ObjectId;
+  firstName: string;
+  lastName: string;
+}
 interface IEvent extends Document {
   eventName?: string;
   organisator?: string;
@@ -7,7 +12,7 @@ interface IEvent extends Document {
   subdescription?: string;
   photo?: string;
   location?: string;
-  participants?: string[];
+  participants?: IParticipant[];
   interests?: string[];
 }
 
@@ -19,7 +24,16 @@ const EventSchema: Schema = new Schema(
     photo: { type: String },
     location: { type: String },
     subdescription: { type: String },
-    participants: { type: [String] },
+    participants: {
+      type: [
+        {
+          id: { type: Schema.Types.ObjectId, ref: "User", required: true },
+          firstName: { type: String, required: true },
+          lastName: { type: String, required: true },
+        },
+      ],
+      default: [],
+    },
     interests: { type: [String] },
   },
   { collection: "event" }
