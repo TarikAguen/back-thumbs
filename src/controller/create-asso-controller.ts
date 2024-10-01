@@ -24,7 +24,7 @@ export const registerAsso = async (req: Request, res: Response) => {
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    let photoUrl = undefined;
+    let logoUrl = undefined;
 
     // Si un fichier est uploadé, nous l'envoyons à S3
     if (req.file) {
@@ -36,7 +36,7 @@ export const registerAsso = async (req: Request, res: Response) => {
       };
 
       const uploadResult = await s3.upload(params).promise();
-      photoUrl = uploadResult.Location; // Stocker l'URL de la photo
+      logoUrl = uploadResult.Location; // Stocker l'URL de la photo
     }
 
     const newAsso = new Asso({
@@ -53,7 +53,7 @@ export const registerAsso = async (req: Request, res: Response) => {
       adress,
       creationdate,
       interests,
-      logo: photoUrl, // Inclure la photo si elle existe
+      logo: logoUrl, // Inclure la photo si elle existe
     });
 
     console.log("Nouvel asso à sauvegarder :", newAsso);

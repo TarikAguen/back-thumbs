@@ -23,7 +23,7 @@ export const updateAsso = async (req: Request, res: Response) => {
     creationdate,
     interests,
   } = req.body;
-  let photoUrl = undefined;
+  let logoUrl = undefined;
 
   // if file uploaded
   if (req.file) {
@@ -36,7 +36,7 @@ export const updateAsso = async (req: Request, res: Response) => {
     };
 
     const uploadResult = await s3.upload(params).promise();
-    photoUrl = uploadResult.Location;
+    logoUrl = uploadResult.Location;
   }
   try {
     const updatedUser = await Asso.findByIdAndUpdate(
@@ -112,7 +112,7 @@ export const profilUpdate = async (req: Request, res: Response) => {
       },
       { new: true }
     );
-    let photoUrl = undefined;
+    let logoUrl = undefined;
 
     // if file uploaded
     if (req.file) {
@@ -125,7 +125,7 @@ export const profilUpdate = async (req: Request, res: Response) => {
       };
 
       const uploadResult = await s3.upload(params).promise();
-      photoUrl = uploadResult.Location;
+      logoUrl = uploadResult.Location;
     }
 
     if (!postUser) {
