@@ -179,7 +179,7 @@ export const filterEventsByInterests = async (req: Request, res: Response) => {
       message: "Événements filtrés récupérés avec succès.",
       events: filteredEvents,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
     res
       .status(500)
