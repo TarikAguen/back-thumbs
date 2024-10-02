@@ -6,7 +6,7 @@ import {
   getUserEvents,
   toggleParticipant,
   getAllEvents,
-  filterEventsByInterests,
+  filterByInterestsAndType,
 } from "../controller/create-event-controller";
 
 const router = Router();
@@ -18,7 +18,7 @@ router.get("/getUser-event", getUserEvents);
 router.get("/events", getAllEvents);
 router.post("/event/:id/toggle-participant", toggleParticipant);
 // Route pour filtrer les événements par intérêts
-router.get("/event-filter", filterEventsByInterests);
+router.get("/event-filter", filterByInterestsAndType);
 
 // Route pour supprimer un événement
 router.delete("/delete-event/:id", deleteEvent); // :id pour spécifier l'événement à supprimer

@@ -7,6 +7,7 @@ interface IParticipant {
 }
 
 interface IEvent extends Document {
+  type?: string;
   eventName?: string;
   organisator?: string;
   description?: string;
@@ -21,6 +22,7 @@ interface IEvent extends Document {
 
 const EventSchema: Schema = new Schema(
   {
+    type: { type: String, default: "event" },
     eventName: { type: String, required: true },
     organisator: { type: String, required: true },
     description: { type: String, required: true },
@@ -32,9 +34,9 @@ const EventSchema: Schema = new Schema(
     participants: {
       type: [
         {
-          id: { type: Schema.Types.ObjectId, ref: "User", required: true },
-          firstName: { type: String, required: true },
-          lastName: { type: String, required: true },
+          id: { type: Schema.Types.ObjectId, ref: "User" },
+          firstName: { type: String },
+          lastName: { type: String },
         },
       ],
       default: [],

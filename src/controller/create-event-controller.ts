@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import Event from "../models/Event";
 import s3 from "../config/s3";
+import User from "../models/User";
+import Asso from "../models/Asso";
 
 // Fonction pour l'inscription d'une association
 export const createEvent = async (req: Request, res: Response) => {
@@ -157,33 +159,54 @@ export const getAllEvents = async (req: Request, res: Response) => {
 };
 
 // Fonction pour filtrer les événements par intérêts
-export const filterEventsByInterests = async (req: Request, res: Response) => {
-  const { interests } = req.query;
+// Fonction pour filtrer les événements, utilisateurs et associations
+export const filterByInterestsAndType = async (req: Request, res: Response) => {
+  const { interests, type } = req.query;
+
+  const interestsArray = Array.isArray(interests) ? interests : [interests];
 
   if (!interests) {
     return res.status(400).send("Les intérêts sont requis.");
   }
 
-  const interestsArray = Array.isArray(interests) ? interests : [interests]; // S'assurer que c'est un tableau
-
   try {
-    const filteredEvents = await Event.find({
-      interests: { $in: interestsArray },
-    });
+    let results = [];
 
-    if (filteredEvents.length === 0) {
-      return res.status(404).send("Aucun événement trouvé avec ces intérêts.");
+    // Filtrer par intérêt et type
+    if (type === "event" || !type) {
+      const filteredEvents = await Event.find({
+        interests: { $in: interestsArray },
+      });
+      results.push(...filteredEvents);
+    }
+
+    if (type === "user" || !type) {
+      const filteredUsers = await User.find({
+        interests: { $in: interestsArray },
+      });
+      results.push(...filteredUsers);
+    }
+
+    if (type === "asso" || !type) {
+      const filteredAssos = await Asso.find({
+        interests: { $in: interestsArray },
+      });
+      results.push(...filteredAssos);
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send("Aucun résultat trouvé avec ces critères.");
     }
 
     res.json({
-      message: "Événements filtrés récupérés avec succès.",
-      events: filteredEvents,
+      message: "Résultats filtrés récupérés avec succès.",
+      results,
     });
   } catch (err: any) {
     console.error(err);
     res
       .status(500)
-      .send("Erreur lors de la récupération des événements : " + err.message);
+      .send("Erreur lors de la récupération des résultats : " + err.message);
   }
 };
 
