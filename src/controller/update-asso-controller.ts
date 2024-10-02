@@ -183,15 +183,15 @@ export const deleteAssoProfil = async (req: Request, res: Response) => {
 // Fonction pour récupérer toutes les asso
 export const getAllAsso = async (req: Request, res: Response) => {
   try {
-    const events = await Asso.find(); // Récupérer toutes les asso dans la base de données
+    const asso = await Asso.find(); // Récupérer toutes les asso dans la base de données
 
-    if (events.length === 0) {
+    if (asso.length === 0) {
       return res.status(404).send("Aucune asso trouvée");
     }
 
     res.json({
       message: "Associations récupérées avec succès",
-      events,
+      asso,
     });
   } catch (err) {
     console.error(err);
