@@ -20,7 +20,7 @@ router.get("/events", getAllEvents);
 router.post("/event/:id/toggle-participant", toggleParticipant);
 // Route pour filtrer les événements par intérêts
 router.get("/event-filter", filterByInterestsAndType);
-router.get("getEvent/:id", getEventById);
+router.get("/getEvent/:id", getEventById);
 // Route pour supprimer un événement
 router.delete("/delete-event/:id", deleteEvent); // :id pour spécifier l'événement à supprimer
 
