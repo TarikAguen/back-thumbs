@@ -113,7 +113,6 @@ export const toggleParticipant = async (req: Request, res: Response) => {
       return res.status(404).send("Événement non trouvé");
     }
 
-    // Assure-toi que `participants` est bien un tableau
     if (!event.participants) {
       event.participants = []; // Initialisation au besoin
     }
@@ -156,6 +155,38 @@ export const getAllEvents = async (req: Request, res: Response) => {
     res.status(500).send("Erreur lors de la récupération des événements");
   }
 };
+
+// Fonction pour filtrer les événements par intérêts
+export const filterEventsByInterests = async (req: Request, res: Response) => {
+  const { interests } = req.query;
+
+  if (!interests) {
+    return res.status(400).send("Les intérêts sont requis.");
+  }
+
+  const interestsArray = Array.isArray(interests) ? interests : [interests]; // S'assurer que c'est un tableau
+
+  try {
+    const filteredEvents = await Event.find({
+      interests: { $in: interestsArray },
+    });
+
+    if (filteredEvents.length === 0) {
+      return res.status(404).send("Aucun événement trouvé avec ces intérêts.");
+    }
+
+    res.json({
+      message: "Événements filtrés récupérés avec succès.",
+      events: filteredEvents,
+    });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send("Erreur lors de la récupération des événements : " + err.message);
+  }
+};
+
 // Middleware pour vérifier la révocation des tokens
 export const checkRevokedToken = (req: Request, res: Response, next: any) => {
   const token = req.header("Authorization")?.split(" ")[1];
