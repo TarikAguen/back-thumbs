@@ -154,3 +154,28 @@ export const getAssoDetails = async (req: Request, res: Response) => {
     res.status(500).send("Error retrieving asso information");
   }
 };
+
+// Supprimer asso profil
+export const deleteAssoProfil = async (req: Request, res: Response) => {
+  const userId = res.locals.user.userId;
+
+  try {
+
+    //check si user est une asso
+    const asso = await Asso.findById(userId);
+    if (!asso) {
+      return res.status(404).send("Association non trouvée");
+    }
+
+    // Supprimer l'association
+    const deletedAsso = await Asso.findByIdAndDelete(userId);
+    if (!deletedAsso) {
+      return res.status(404).send("Association non trouvée");
+    }
+
+    res.send("Association supprimée avec succès");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la suppression de l'association");
+  }
+};
