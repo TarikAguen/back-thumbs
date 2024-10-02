@@ -48,15 +48,15 @@ export const createEvent = async (req: Request, res: Response) => {
       photo: photoUrl, // Inclure la photo si elle existe
     });
 
-    console.log("Nouvel asso à sauvegarder :", newEvent);
+    console.log("Nouvel event à sauvegarder :", newEvent);
     await newEvent.save();
-    res.status(201).send("Asso registered");
+    res.status(201).send("event registered");
   } catch (err: any) {
     console.error(err);
     if (err.code === 11000) {
       res.status(400).send("Email already exists");
     } else {
-      res.status(500).send("Error registering Asso: " + err.message);
+      res.status(500).send("Error registering event: " + err.message);
     }
   }
 };
@@ -172,7 +172,6 @@ export const filterByInterestsAndType = async (req: Request, res: Response) => {
   try {
     let results = [];
 
-    // Filtrer par intérêt et type
     if (type === "event" || !type) {
       const filteredEvents = await Event.find({
         interests: { $in: interestsArray },

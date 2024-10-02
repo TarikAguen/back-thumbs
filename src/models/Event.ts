@@ -26,7 +26,7 @@ const EventSchema: Schema = new Schema(
     eventName: { type: String, required: true },
     organisator: { type: String, required: true },
     description: { type: String, required: true },
-    photo: { type: String },
+    photo: { type: String, required: true },
     city: { type: String },
     postalcode: { type: Number },
     adress: { type: String },
