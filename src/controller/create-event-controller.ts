@@ -208,6 +208,28 @@ export const filterByInterestsAndType = async (req: Request, res: Response) => {
       .send("Erreur lors de la récupération des résultats : " + err.message);
   }
 };
+// Fonction pour récupérer un événement par ID
+export const getEventById = async (req: Request, res: Response) => {
+  const eventId = req.params.id;
+
+  try {
+    // Rechercher par ID dans la bdd
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).send("Événement non trouvé");
+    }
+
+    // Renvoyer les données de l'événement
+    res.json({
+      message: "Détails de l'événement récupérés avec succès",
+      event,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération de l'événement");
+  }
+};
 
 // Middleware pour vérifier la révocation des tokens
 export const checkRevokedToken = (req: Request, res: Response, next: any) => {
