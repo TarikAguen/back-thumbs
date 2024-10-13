@@ -79,6 +79,16 @@ export async function findNearbyUsers(req: Request, res: Response) {
     res.json(users);
   } catch (error) {
     console.error("Failed to find nearby users:", error);
-    res.status(500).send("Failed to find nearby users");
+    res
+      .status(500)
+      .send(
+        "Failed to find nearby users" +
+          "test:" +
+          long +
+          " lat : " +
+          lat +
+          "rad:" +
+          radius
+      );
   }
 }
