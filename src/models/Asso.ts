@@ -14,7 +14,7 @@ interface IAsso extends Document {
   creationdate?: Date;
   city?: string;
   postalcode?: number;
-  address?: string;
+  adress?: string;
   interests?: string[];
 }
 
@@ -34,7 +34,7 @@ const AssoSchema: Schema = new Schema(
     interests: { type: [String] },
     city: { type: String, required: true },
     postalcode: { type: Number, required: true },
-    address: { type: String, required: true },
+    adress: { type: String, required: true },
   },
   { collection: "asso" }
 );

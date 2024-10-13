@@ -15,7 +15,7 @@ interface IUser extends Document {
   genre?: "homme" | "femme" | "autre";
   city?: string;
   postalcode?: number;
-  address?: string;
+  adress?: string;
   location: {
     type: { type: String; enum: ["Point"]; default: "Point" };
     coordinates: { type: [Number]; index: "2dsphere" }; // Longitude (E/W), Latitude (N/S)
@@ -37,7 +37,7 @@ const UserSchema: Schema = new Schema(
     genre: { type: String, enum: ["homme", "femme", "autre"] },
     city: { type: String, required: true },
     postalcode: { type: Number, required: true },
-    address: { type: String, required: true },
+    adress: { type: String, required: true },
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
       coordinates: { type: [Number], index: "2dsphere" }, // Important pour les requêtes géospatiales

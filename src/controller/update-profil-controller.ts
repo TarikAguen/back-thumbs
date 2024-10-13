@@ -19,7 +19,7 @@ export const updateProfil = async (req: Request, res: Response) => {
     genre,
     city,
     postalcode,
-    address,
+    adress,
   } = req.body;
 
   try {
@@ -53,7 +53,7 @@ export const updateProfil = async (req: Request, res: Response) => {
         genre,
         city,
         postalcode,
-        address,
+        adress,
         interests,
         ...(photoUrl && { photo: photoUrl }),
       },
