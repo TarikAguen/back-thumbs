@@ -29,7 +29,7 @@ app.use("/auth-asso", authAssoRoutes);
 app.use("/profil", authenticateJWT, profilRoutes);
 app.use("/asso", authenticateJWTAsso, AssoRoutes);
 app.use("/event", authenticateJWTAsso, EventRoutes);
-app.use("/geo", authenticateJWTAsso, GeoRoutes);
+app.use("/geo", authenticateJWT, GeoRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
