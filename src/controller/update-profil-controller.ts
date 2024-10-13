@@ -5,6 +5,7 @@ import Interest from "../models/Interest";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import s3 from "../config/s3";
+import geocodeAddress from "../config/geocode";
 import { v4 as uuidv4 } from "uuid";
 
 // Fonction pour mettre à jour le profil utilisateur
@@ -43,39 +44,64 @@ export const updateProfil = async (req: Request, res: Response) => {
       photoUrl = uploadResult.Location;
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        firstName,
-        password: hashedPassword || undefined,
-        lastName,
-        birthdate,
-        description,
-        presentation,
-        genre,
-        city,
-        postalcode,
-        address,
-        interests,
-        ...(photoUrl && { photo: photoUrl }),
-      },
-      { new: true }
-    );
+    const updateData = {
+      firstName,
+      lastName,
+      birthdate,
+      description,
+      presentation,
+      genre,
+      city,
+      postalcode,
+      address,
+      interests,
+      ...(hashedPassword && { password: hashedPassword }),
+      ...(photoUrl && { photo: photoUrl }),
+    };
+
+    // Mise à jour des informations de l'utilisateur sans la localisation
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
 
     if (!updatedUser) {
       return res.status(404).send("User not found");
+    }
+
+    // Géocodage de l'adresse et mise à jour de la localisation si l'adresse est fournie
+    if (address) {
+      const { latitude, longitude } = await geocodeAddress(address);
+
+      const locationUpdate = await User.findByIdAndUpdate(
+        userId,
+        {
+          location: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+        },
+        { new: true }
+      );
+
+      if (!locationUpdate) {
+        return res.status(404).send("Failed to update user location");
+      }
+
+      return res.json({
+        message: "User and location updated successfully",
+        user: locationUpdate,
+      });
     }
 
     res.json({
       message: "User updated successfully",
       user: updatedUser,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    res.status(500).send("Error updating user");
+    res.status(500).send("Error updating user: " + err.message);
   }
 };
-
 // Fonction pour supprimer le profil utilisateur
 export const deleteProfil = async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;

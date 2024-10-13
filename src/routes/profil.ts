@@ -23,12 +23,7 @@ router.put(
 );
 
 // Route pour mettre à jour le profil (autre endpoint)
-router.post(
-  "/profilupdate",
-  upload.single("photo"),
-  updateProfil,
-  updateLocation
-);
+router.post("/profilupdate", upload.single("photo"), updateProfil);
 
 // Route pour supprimer le profil
 router.delete("/delete-profil", deleteProfil);

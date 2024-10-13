@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 import s3 from "../config/s3";
+import geocodeAddress from "../config/geocode";
 
 // Fonction pour enregistrer un nouvel utilisateur
 export const register = async (req: Request, res: Response) => {
@@ -55,7 +56,22 @@ export const register = async (req: Request, res: Response) => {
     });
 
     console.log("Nouvel utilisateur à sauvegarder :", newUser);
-    await newUser.save();
+    const savedUser = await newUser.save();
+    const { latitude, longitude } = await geocodeAddress(address);
+
+    // Mise à jour de la localisation de l'utilisateur
+    const updatedUser = await User.findByIdAndUpdate(
+      savedUser._id,
+      {
+        location: {
+          type: "Point",
+          coordinates: [longitude, latitude],
+        },
+      },
+      { new: true }
+    );
+
+    res.status(201).json(updatedUser);
     res.status(201).send("User registered");
   } catch (err: any) {
     console.error(err);

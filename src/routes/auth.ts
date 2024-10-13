@@ -12,7 +12,7 @@ const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Route pour enregistrer un utilisateur
-router.post("/register", upload.single("photo"), register, updateLocation);
+router.post("/register", upload.single("photo"), register);
 
 // Route pour connecter un utilisateur
 router.post("/login", login);

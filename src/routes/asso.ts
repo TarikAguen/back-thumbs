@@ -4,7 +4,7 @@ import {
   profilUpdate,
   getAssoDetails,
   deleteAssoProfil,
-  getAllAsso
+  getAllAsso,
 } from "../controller/update-asso-controller"; // Importation du contrôleur
 
 const router = Router();
