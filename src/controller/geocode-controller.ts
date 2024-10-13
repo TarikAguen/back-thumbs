@@ -1,34 +1,39 @@
 import { Request, Response } from "express";
 import User from "../models/User";
-import geocodeaddress from "../config/geocode";
+import geocodeAddress from "../config/geocode";
 
 // Fonction pour mettre à jour la localisation d'un utilisateur
 export async function updateLocation(req: Request, res: Response) {
-  const { address } = req.body; // L'addresse est supposée venir du corps de la requête
+  const { address } = req.body;
 
   if (typeof address !== "string" || address.trim() === "") {
     return res
       .status(400)
-      .send("address is required and must be a non-empty string.");
+      .send("Address is required and must be a non-empty string.");
   }
 
   try {
-    // Convertir l'addresse en coordonnées géographiques
-    const { latitude, longitude } = await geocodeaddress(address);
+    const { latitude, longitude } = await geocodeAddress(address);
 
-    // Mettre à jour l'utilisateur avec les nouvelles coordonnées
+    const userId = res.locals.user.userId; // Utilisation de res.locals pour l'ID utilisateur
+    if (!userId) {
+      return res.status(403).send("User not identified.");
+    }
+
     const user = await User.findByIdAndUpdate(
-      req.user.id,
-      {
-        "location.coordinates": [longitude, latitude],
-      },
+      userId,
+      { "location.coordinates": [longitude, latitude] },
       { new: true }
     );
 
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
     res.json(user);
   } catch (error) {
-    console.error("Failed to update location:", error, address);
-    res.status(500).send("Failed to update location" + error + address);
+    console.error("Failed to update location:", error);
+    res.status(500).send("Failed to update location");
   }
 }
 
