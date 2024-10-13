@@ -8,6 +8,7 @@ import authAssoRoutes from "./routes/auth-asso";
 import profilRoutes from "./routes/profil";
 import AssoRoutes from "./routes/asso";
 import EventRoutes from "./routes/event";
+import GeoRoutes from "./routes/geocode";
 import { authenticateJWTAsso } from "./middleware/auth-asso";
 dotenv.config();
 const app: Express = express();
@@ -28,6 +29,7 @@ app.use("/auth-asso", authAssoRoutes);
 app.use("/profil", authenticateJWT, profilRoutes);
 app.use("/asso", authenticateJWTAsso, AssoRoutes);
 app.use("/event", authenticateJWTAsso, EventRoutes);
+app.use("/geo", authenticateJWTAsso, GeoRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
