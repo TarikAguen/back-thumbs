@@ -4,7 +4,7 @@ import geocodeAddress from "../config/geocode";
 
 // Fonction pour mettre à jour la localisation d'un utilisateur
 export async function updateLocation(req: Request, res: Response) {
-  const { address } = req.body; // L'adresse est supposée venir du corps de la requête
+  const { address } = req.body; // L'addresse est supposée venir du corps de la requête
 
   if (typeof address !== "string" || address.trim() === "") {
     return res
@@ -13,7 +13,7 @@ export async function updateLocation(req: Request, res: Response) {
   }
 
   try {
-    // Convertir l'adresse en coordonnées géographiques
+    // Convertir l'addresse en coordonnées géographiques
     const { latitude, longitude } = await geocodeAddress(address);
 
     // Mettre à jour l'utilisateur avec les nouvelles coordonnées

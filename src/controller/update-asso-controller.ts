@@ -19,7 +19,7 @@ export const updateAsso = async (req: Request, res: Response) => {
     telephone,
     city,
     postalcode,
-    adress,
+    address,
     creationdate,
     interests,
   } = req.body;
@@ -53,7 +53,7 @@ export const updateAsso = async (req: Request, res: Response) => {
         telephone,
         city,
         postalcode,
-        adress,
+        address,
         creationdate,
         interests,
       },
@@ -87,7 +87,7 @@ export const profilUpdate = async (req: Request, res: Response) => {
     telephone,
     city,
     postalcode,
-    adress,
+    address,
     creationdate,
     interests,
   } = req.body;
@@ -106,7 +106,7 @@ export const profilUpdate = async (req: Request, res: Response) => {
         telephone,
         city,
         postalcode,
-        adress,
+        address,
         creationdate,
         interests,
       },
@@ -160,7 +160,6 @@ export const deleteAssoProfil = async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
 
   try {
-
     //check si user est une asso
     const asso = await Asso.findById(userId);
     if (!asso) {
