@@ -1,9 +1,9 @@
 import axios from "axios";
 
-async function geocodeadress(adress: string) {
+async function geocodeaddress(address: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json`;
   const params = {
-    adress,
+    address,
     key: process.env.GOOGLE_MAPS_API_KEY,
   };
 
@@ -17,4 +17,4 @@ async function geocodeadress(adress: string) {
   }
 }
 
-export default geocodeadress;
+export default geocodeaddress;

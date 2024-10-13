@@ -1,20 +1,20 @@
 import { Request, Response } from "express";
 import User from "../models/User";
-import geocodeadress from "../config/geocode";
+import geocodeaddress from "../config/geocode";
 
 // Fonction pour mettre à jour la localisation d'un utilisateur
 export async function updateLocation(req: Request, res: Response) {
-  const { adress } = req.body; // L'adresse est supposée venir du corps de la requête
+  const { address } = req.body; // L'addresse est supposée venir du corps de la requête
 
-  if (typeof adress !== "string" || adress.trim() === "") {
+  if (typeof address !== "string" || address.trim() === "") {
     return res
       .status(400)
-      .send("adress is required and must be a non-empty string.");
+      .send("address is required and must be a non-empty string.");
   }
 
   try {
-    // Convertir l'adresse en coordonnées géographiques
-    const { latitude, longitude } = await geocodeadress(adress);
+    // Convertir l'addresse en coordonnées géographiques
+    const { latitude, longitude } = await geocodeaddress(address);
 
     // Mettre à jour l'utilisateur avec les nouvelles coordonnées
     const user = await User.findByIdAndUpdate(
