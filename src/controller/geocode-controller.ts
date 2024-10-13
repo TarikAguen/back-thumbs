@@ -27,7 +27,7 @@ export async function updateLocation(req: Request, res: Response) {
 
     res.json(user);
   } catch (error) {
-    console.error("Failed to update location:", error);
+    console.error("Failed to update location:", error, "test : " + req.user.id);
     res.status(500).send("Failed to update location");
   }
 }
