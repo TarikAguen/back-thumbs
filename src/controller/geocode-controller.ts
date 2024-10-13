@@ -66,7 +66,7 @@ export async function findNearbyUsers(req: Request, res: Response) {
 
     const users = await User.find({
       location: {
-        $geoNear: {
+        $nearSphere: {
           $geometry: {
             type: "Point",
             coordinates: [long, lat],
