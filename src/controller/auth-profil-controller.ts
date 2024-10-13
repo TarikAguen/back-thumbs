@@ -62,12 +62,7 @@ export const register = async (req: Request, res: Response) => {
     // Mise à jour de la localisation de l'utilisateur
     const updatedUser = await User.findByIdAndUpdate(
       savedUser._id,
-      {
-        location: {
-          type: "Point",
-          coordinates: [longitude, latitude],
-        },
-      },
+      { "location.coordinates": [longitude, latitude] },
       { new: true }
     );
 
