@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import bcrypt from "bcrypt";
 import Interest from "../models/Interest";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 import s3 from "../config/s3";
 import { v4 as uuidv4 } from "uuid";
 
@@ -149,5 +151,104 @@ export const getUserInterest = async (req: Request, res: Response) => {
       .send(
         "Erreur lors de la récupération des centres d'intérêts de l'utilisateur"
       );
+  }
+};
+export const forgetPassword = async (req: Request, res: Response) => {
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email: req.body.email });
+
+    // If user not found, send error message
+    if (!user) {
+      return res.status(404).send({ message: "Email not found" });
+    }
+
+    // Generate a unique JWT token for the user that contains the user's id
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET!, {
+      expiresIn: "10m",
+    });
+
+    // Send the token to the user's email
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD_APP_EMAIL,
+      },
+    });
+
+    // Email configuration
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: req.body.email,
+      subject: "Mot de passe oublié",
+      html: `<h1>Réinitialisé votre mot de passe</h1>
+    <p>Cliquez sur le lien suivant pour réinitialiser votre mot de passe: </p>
+    <a href="https://app-thumbs.netlify.app/reset-password/${token}">https://app-thumbs.netlify.app/reset-password/${token}</a>
+    <p>The link will expire in 10 minutes.</p>
+    <p>If you didn't request a password reset, please ignore this email.</p>`,
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, (err: any, info: any) => {
+      if (err) {
+        return res.status(500).send({ message: err.message });
+      }
+      res.status(200).send({ message: "Email sent" });
+    });
+  } catch (err: any) {
+    res.status(500).send({ message: err.message });
+  }
+};
+export const resetPassword = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  if (!token) {
+    return res.status(400).send({ message: "Token is required" });
+  }
+
+  try {
+    // Vérifier le token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+
+    // S'assurer que decoded est un objet et contient l'email
+    if (typeof decoded !== "object" || !decoded.email) {
+      return res.status(400).send({ message: "Invalid token" });
+    }
+
+    // Trouver l'utilisateur par l'email inclus dans le token
+    const user = await User.findOne({ email: decoded.email });
+
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    // Hasher le nouveau mot de passe
+    const hashedPassword = password
+      ? await bcrypt.hash(password, 10)
+      : undefined;
+
+    // Mettre à jour le mot de passe de l'utilisateur
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      { password: hashedPassword },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send("User not found");
+    }
+
+    res.json({
+      message: "Password updated successfully",
+      user: updatedUser,
+    });
+  } catch (err) {
+    if (err instanceof jwt.JsonWebTokenError) {
+      return res.status(401).send({ message: "Invalid or expired token" });
+    }
+    console.error(err);
+    res.status(500).send({ message: "Error updating password" });
   }
 };

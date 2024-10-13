@@ -1,5 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
+import { updateLocation } from "../controller/geocode-controller";
 import {
   register,
   login,
@@ -11,7 +12,7 @@ const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Route pour enregistrer un utilisateur
-router.post("/register", upload.single("photo"), register);
+router.post("/register", upload.single("photo"), register, updateLocation);
 
 // Route pour connecter un utilisateur
 router.post("/login", login);
