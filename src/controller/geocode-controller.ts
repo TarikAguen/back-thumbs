@@ -39,30 +39,30 @@ export async function updateLocation(req: Request, res: Response) {
 
 // Fonction pour trouver des utilisateurs à proximité d'une localisation
 export async function findNearbyUsers(req: Request, res: Response) {
-  const { long, lat, rad } = req.query;
+  const { longitude, latitude, radiusInKm } = req.query;
 
   if (
-    typeof long !== "string" ||
-    typeof lat !== "string" ||
-    typeof rad !== "string"
+    typeof longitude !== "string" ||
+    typeof latitude !== "string" ||
+    typeof radiusInKm !== "string"
   ) {
     return res
       .status(400)
       .send("Longitude, Latitude, and Radius are required as strings.");
   }
 
-  const longitude = parseFloat(long);
-  const latitude = parseFloat(lat);
-  const radiusInKm = parseFloat(rad);
+  const long = parseFloat(longitude);
+  const lat = parseFloat(latitude);
+  const radius = parseFloat(radiusInKm);
 
-  if (isNaN(longitude) || isNaN(latitude) || isNaN(radiusInKm)) {
+  if (isNaN(long) || isNaN(lat) || isNaN(radius)) {
     return res
       .status(400)
       .send("Longitude, Latitude, and Radius must be valid numbers.");
   }
 
   try {
-    const radiusInMeters = radiusInKm * 1000; // Convertir les kilomètres en mètres
+    const radiusInMeters = radius * 1000; // Convertir les kilomètres en mètres
 
     const users = await User.find({
       location: {
@@ -88,7 +88,7 @@ export async function findNearbyUsers(req: Request, res: Response) {
           " lat : " +
           lat +
           "rad:" +
-          radiusInKm
+          radius
       );
   }
 }
