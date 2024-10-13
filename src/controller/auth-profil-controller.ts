@@ -22,11 +22,10 @@ export const register = async (req: Request, res: Response) => {
       postalcode,
       address,
     } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
 
+    const hashedPassword = await bcrypt.hash(password, 10);
     let photoUrl = undefined;
 
-    // Si un fichier est uploadé, nous l'envoyons à S3
     if (req.file) {
       const params = {
         Bucket: process.env.S3_BUCKET_NAME!,
@@ -55,19 +54,24 @@ export const register = async (req: Request, res: Response) => {
       photo: photoUrl,
     });
 
-    console.log("Nouvel utilisateur à sauvegarder :", newUser);
     const savedUser = await newUser.save();
+
+    // Géocodage de l'adresse
     const { latitude, longitude } = await geocodeAddress(address);
 
     // Mise à jour de la localisation de l'utilisateur
     const updatedUser = await User.findByIdAndUpdate(
       savedUser._id,
-      { "location.coordinates": [longitude, latitude] },
+      {
+        location: {
+          type: "Point",
+          coordinates: [longitude, latitude],
+        },
+      },
       { new: true }
     );
 
     res.status(201).json(updatedUser);
-    res.status(201).send("User registered");
   } catch (err: any) {
     console.error(err);
     if (err.code === 11000) {
