@@ -38,6 +38,9 @@ export const register = async (req: Request, res: Response) => {
       photoUrl = uploadResult.Location;
     }
 
+    // Géocodage de l'adresse
+    const { latitude, longitude } = await geocodeAddress(address);
+
     const newUser = new User({
       email,
       password: hashedPassword,
@@ -52,21 +55,16 @@ export const register = async (req: Request, res: Response) => {
       postalcode,
       address,
       photo: photoUrl,
+      location: {
+        // Inclure l'objet location complet lors de la création
+        type: "Point",
+        coordinates: [longitude, latitude],
+      },
     });
 
-    const savedUser = await newUser.save();
+    await newUser.save();
 
-    // Géocodage de l'adresse
-    const { latitude, longitude } = await geocodeAddress(address);
-
-    // Mise à jour de la localisation de l'utilisateur
-    const updatedUser = await User.findByIdAndUpdate(
-      savedUser._id,
-      { "location.coordinates": [longitude, latitude] },
-      { new: true }
-    );
-    res.json(updatedUser);
-    res.status(201).json(updatedUser);
+    res.status(201).json({ message: "User registered", user: newUser });
   } catch (err: any) {
     console.error(err);
     if (err.code === 11000) {
