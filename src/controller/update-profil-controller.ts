@@ -184,17 +184,16 @@ export const forgetPassword = async (req: Request, res: Response) => {
     // Find the user by email
     const user = await User.findOne({ email: req.body.email });
 
-    // If user not found, send error message
+    // si pas d'email de trouvé alors erreur
     if (!user) {
       return res.status(404).send({ message: "Email not found" });
     }
 
-    // Generate a unique JWT token for the user that contains the user's id
+    // génération d'un token contenant l'email
     const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET!, {
       expiresIn: "10m",
     });
 
-    // Send the token to the user's email
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -203,7 +202,7 @@ export const forgetPassword = async (req: Request, res: Response) => {
       },
     });
 
-    // Email configuration
+    // mail config
     const mailOptions = {
       from: process.env.EMAIL,
       to: req.body.email,
@@ -211,11 +210,11 @@ export const forgetPassword = async (req: Request, res: Response) => {
       html: `<h1>Réinitialisé votre mot de passe</h1>
     <p>Cliquez sur le lien suivant pour réinitialiser votre mot de passe: </p>
     <a href="https://app-thumbs.netlify.app/reset-password/${token}">https://app-thumbs.netlify.app/reset-password/${token}</a>
-    <p>The link will expire in 10 minutes.</p>
-    <p>If you didn't request a password reset, please ignore this email.</p>`,
+    <p>Ce lien expire dans 10 minutes</p>
+    <p>Si vous n'avez pas demandé de réinitialisation de mot de passe, merci de ne pas tenir compte de ce mail</p>`,
     };
 
-    // Send the email
+    // envoie du mail
     transporter.sendMail(mailOptions, (err: any, info: any) => {
       if (err) {
         return res.status(500).send({ message: err.message });
