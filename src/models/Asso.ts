@@ -25,7 +25,7 @@ const AssoSchema: Schema = new Schema(
     password: { type: String, required: true },
     nameasso: { type: String, required: true },
     siret: { type: Number, required: true },
-    logo: { type: String },
+    logo: { type: String, default: "placeholder" },
     telephone: { type: Number, required: true },
     description: { type: String },
     presentation: { type: String },
