@@ -100,7 +100,9 @@ export async function findNearbyUsers(req: Request, res: Response) {
       },
     });
 
-    res.json(users);
+    res.json("Users :" + users + " Fin User.");
+    res.json("Events: " + events + "Fin Events.");
+    res.json("Asso: " + asso + "Fin asso.");
   } catch (error) {
     console.error("Failed to find nearby users:", error);
     res
