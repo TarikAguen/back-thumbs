@@ -56,7 +56,6 @@ export const register = async (req: Request, res: Response) => {
       address,
       photo: photoUrl,
       location: {
-        // Inclure l'objet location complet lors de la création
         type: "Point",
         coordinates: [longitude, latitude],
       },

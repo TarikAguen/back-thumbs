@@ -3,6 +3,7 @@ import Asso from "../models/Asso";
 import s3 from "../config/s3";
 import multer from "multer";
 import bcrypt from "bcrypt";
+import geocodeAddress from "../config/geocode";
 
 // put update photo
 export const updateAsso = async (req: Request, res: Response) => {
@@ -63,7 +64,30 @@ export const updateAsso = async (req: Request, res: Response) => {
     if (!updatedUser) {
       return res.status(404).send("Asso not found");
     }
+    // Géocodage de l'adresse et mise à jour de la localisation si l'adresse est fournie
+    if (address) {
+      const { latitude, longitude } = await geocodeAddress(address);
 
+      const locationUpdate = await User.findByIdAndUpdate(
+        userId,
+        {
+          location: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+        },
+        { new: true }
+      );
+
+      if (!locationUpdate) {
+        return res.status(404).send("Failed to update user location");
+      }
+
+      return res.json({
+        message: "User and location updated successfully",
+        user: locationUpdate,
+      });
+    }
     res.json({
       message: "Asso updated successfully",
       user: updatedUser,

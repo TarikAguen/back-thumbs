@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Asso from "../models/Asso";
 import s3 from "../config/s3";
+import geocodeAddress from "../config/geocode";
 
 // Fonction pour l'inscription d'une association
 export const registerAsso = async (req: Request, res: Response) => {
@@ -38,7 +39,8 @@ export const registerAsso = async (req: Request, res: Response) => {
       const uploadResult = await s3.upload(params).promise();
       logoUrl = uploadResult.Location; // Stocker l'URL de la photo
     }
-
+    // Géocodage de l'adresse
+    const { latitude, longitude } = await geocodeAddress(address);
     const newAsso = new Asso({
       email,
       password: hashedPassword,
@@ -51,6 +53,10 @@ export const registerAsso = async (req: Request, res: Response) => {
       city,
       postalcode,
       address,
+      location: {
+        type: "Point",
+        coordinates: [longitude, latitude],
+      },
       creationdate,
       interests,
       logo: logoUrl, // Inclure la photo si elle existe

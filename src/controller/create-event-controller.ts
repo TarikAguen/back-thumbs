@@ -4,6 +4,7 @@ import Event from "../models/Event";
 import s3 from "../config/s3";
 import User from "../models/User";
 import Asso from "../models/Asso";
+import geocodeAddress from "../config/geocode";
 
 // Fonction pour l'inscription d'une association
 export const createEvent = async (req: Request, res: Response) => {
@@ -35,6 +36,7 @@ export const createEvent = async (req: Request, res: Response) => {
       photoUrl = uploadResult.Location; // Stocker l'URL de la photo
     }
 
+    const { latitude, longitude } = await geocodeAddress(address);
     const newEvent = new Event({
       eventName,
       organisator,
@@ -46,6 +48,10 @@ export const createEvent = async (req: Request, res: Response) => {
       participants,
       interests,
       photo: photoUrl, // Inclure la photo si elle existe
+      location: {
+        type: "Point",
+        coordinates: [longitude, latitude],
+      },
     });
 
     console.log("Nouvel event à sauvegarder :", newEvent);
