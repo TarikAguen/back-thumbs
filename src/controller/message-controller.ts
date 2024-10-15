@@ -9,6 +9,8 @@ export const sendMessage = async (req: Request, res: Response) => {
     const { senderId, receiverId, content } = req.body;
 
     console.log("Looking up sender and receiver in the database");
+
+    // Tente de trouver l'expéditeur et le destinataire dans les utilisateurs ou les associations
     const sender =
       (await User.findById(senderId)) || (await Asso.findById(senderId));
     const receiver =
