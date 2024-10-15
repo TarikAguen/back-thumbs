@@ -9,10 +9,28 @@ import profilRoutes from "./routes/profil";
 import AssoRoutes from "./routes/asso";
 import EventRoutes from "./routes/event";
 import GeoRoutes from "./routes/geocode";
+import { Server } from "http";
+import { Server as SocketIOServer } from "socket.io";
+import messageRoutes from "./routes/message";
 // import PasswordRoutes from "./routes/reset-password";
 import { authenticateJWTAsso } from "./middleware/auth-asso";
 dotenv.config();
 const app: Express = express();
+const server = new Server(app);
+const io = new SocketIOServer(server);
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+
+  socket.on("send_message", (data) => {
+    socket.broadcast.emit("receive_message", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
+
 const PORT: string | number = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
@@ -32,6 +50,7 @@ app.use("/asso", authenticateJWTAsso, AssoRoutes);
 app.use("/event", authenticateJWTAsso, EventRoutes);
 app.use("/geo", authenticateJWT, GeoRoutes);
 // app.use("/reset-password", PasswordRoutes);
+app.use("/messages", messageRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
