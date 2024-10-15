@@ -1,51 +1,49 @@
 // controller/messageController.ts
 import { Request, Response } from "express";
 import Message from "../models/Message";
+import User from "../models/User";
+import Asso from "../models/Asso";
 
-export const sendMessage = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const sendMessage = async (req: Request, res: Response) => {
+  const { senderId, receiverId, content } = req.body;
+
   try {
-    const {
-      senderId,
-      senderProfileType,
-      receiverId,
-      receiverProfileType,
-      message,
-    } = req.body;
+    // Trouver le sender pour obtenir le type
+    const sender =
+      (await User.findById(senderId)) || (await Asso.findById(senderId));
+    const receiver =
+      (await User.findById(receiverId)) || (await Asso.findById(receiverId));
+
+    if (!sender || !receiver) {
+      return res.status(404).send("Sender or Receiver not found");
+    }
+
     const newMessage = new Message({
       senderId,
-      senderProfileType,
       receiverId,
-      receiverProfileType,
-      message,
+      content,
+      onModel: sender.type, // Utilisation du champ 'type' pour définir la collection de référence
     });
+
     await newMessage.save();
-    res
-      .status(201)
-      .json({ message: "Message sent successfully", data: newMessage });
+    res.status(201).json({ message: "Message sent", data: newMessage });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Failed to send message");
+    res.status(500).send("Error sending message");
   }
 };
 
-export const getMessages = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const getMessages = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
   try {
-    const { senderId, receiverId } = req.query;
     const messages = await Message.find({
-      $or: [
-        { senderId, receiverId },
-        { senderId: receiverId, receiverId: senderId },
-      ],
-    }).sort({ createdAt: -1 });
-    res.status(200).json(messages);
+      $or: [{ senderId: userId }, { receiverId: userId }],
+    }).populate("senderId receiverId", "email nameasso");
+
+    res.json(messages);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Failed to get messages");
+    res.status(500).send("Error retrieving messages");
   }
 };
