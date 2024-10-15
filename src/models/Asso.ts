@@ -16,6 +16,10 @@ interface IAsso extends Document {
   postalcode?: number;
   address?: string;
   interests?: string[];
+  location: {
+    type: { type: String; enum: ["Point"]; default: "Point" };
+    coordinates: { type: [Number]; index: "2dsphere" }; // Longitude (E/W), Latitude (N/S)
+  };
 }
 
 const AssoSchema: Schema = new Schema(
@@ -27,14 +31,18 @@ const AssoSchema: Schema = new Schema(
     siret: { type: Number, required: true },
     logo: { type: String, default: "placeholder" },
     telephone: { type: Number, required: true },
-    description: { type: String },
-    presentation: { type: String },
-    website: { type: String },
     creationdate: { type: Date, required: true },
     interests: { type: [String], required: true },
     city: { type: String, required: true },
     postalcode: { type: Number, required: true },
     address: { type: String, required: true },
+    description: { type: String },
+    presentation: { type: String },
+    website: { type: String },
+    location: {
+      type: { type: String, enum: ["Point"], default: "Point" },
+      coordinates: { type: [Number], index: "2dsphere" }, // Important pour les requêtes géospatiales
+    },
   },
   { collection: "asso" }
 );

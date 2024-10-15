@@ -18,6 +18,10 @@ interface IEvent extends Document {
   address?: string;
   participants?: IParticipant[];
   interests?: string[];
+  location: {
+    type: { type: String; enum: ["Point"]; default: "Point" };
+    coordinates: { type: [Number]; index: "2dsphere" }; // Longitude (E/W), Latitude (N/S)
+  };
 }
 
 const EventSchema: Schema = new Schema(
@@ -42,6 +46,10 @@ const EventSchema: Schema = new Schema(
       default: [],
     },
     interests: { type: [String] },
+    location: {
+      type: { type: String, enum: ["Point"], default: "Point" },
+      coordinates: { type: [Number], index: "2dsphere" }, // Important pour les requêtes géospatiales
+    },
   },
   { collection: "event" }
 );

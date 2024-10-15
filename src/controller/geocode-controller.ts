@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/User";
+import Event from "../models/Event";
+import Asso from "../models/Asso";
 import geocodeAddress from "../config/geocode";
 
 // Fonction pour mettre à jour la localisation d'un utilisateur
@@ -65,6 +67,28 @@ export async function findNearbyUsers(req: Request, res: Response) {
     const radiusInMeters = radius * 1000; // Convertir les kilomètres en mètres
 
     const users = await User.find({
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [long, lat],
+          },
+          $maxDistance: radiusInMeters,
+        },
+      },
+    });
+    const events = await Event.find({
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [long, lat],
+          },
+          $maxDistance: radiusInMeters,
+        },
+      },
+    });
+    const asso = await Asso.find({
       location: {
         $nearSphere: {
           $geometry: {
