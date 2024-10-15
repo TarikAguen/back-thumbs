@@ -4,6 +4,8 @@ import s3 from "../config/s3";
 import multer from "multer";
 import bcrypt from "bcrypt";
 import geocodeAddress from "../config/geocode";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
 // put update photo
 export const updateAsso = async (req: Request, res: Response) => {
@@ -68,7 +70,7 @@ export const updateAsso = async (req: Request, res: Response) => {
     if (address) {
       const { latitude, longitude } = await geocodeAddress(address);
 
-      const locationUpdate = await User.findByIdAndUpdate(
+      const locationUpdate = await Asso.findByIdAndUpdate(
         userId,
         {
           location: {
@@ -219,5 +221,104 @@ export const getAllAsso = async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Erreur lors de la récupération des asso");
+  }
+};
+
+export const forgetPassword = async (req: Request, res: Response) => {
+  try {
+    // Find the user by email
+    const asso = await Asso.findOne({ email: req.body.email });
+
+    // si pas d'email de trouvé alors erreur
+    if (!asso) {
+      return res.status(404).send({ message: "Email not found" });
+    }
+
+    // génération d'un token contenant l'email
+    const token = jwt.sign({ email: asso.email }, process.env.JWT_SECRET!, {
+      expiresIn: "10m",
+    });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD_APP_EMAIL,
+      },
+    });
+
+    // mail config
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: req.body.email,
+      subject: "Mot de passe oublié",
+      html: `<h1>Réinitialisé votre mot de passe</h1>
+    <p>Cliquez sur le lien suivant pour réinitialiser votre mot de passe: </p>
+    <a href="https://app-thumbs.netlify.app/reset-password/${token}">https://app-thumbs.netlify.app/reset-password/${token}</a>
+    <p>Ce lien expire dans 10 minutes</p>
+    <p>Si vous n'avez pas demandé de réinitialisation de mot de passe, merci de ne pas tenir compte de ce mail</p>`,
+    };
+
+    // envoie du mail
+    transporter.sendMail(mailOptions, (err: any, info: any) => {
+      if (err) {
+        return res.status(500).send({ message: err.message });
+      }
+      res.status(200).send({ message: "Email sent" });
+    });
+  } catch (err: any) {
+    res.status(500).send({ message: err.message });
+  }
+};
+export const resetPassword = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  if (!token) {
+    return res.status(400).send({ message: "Token is required" });
+  }
+
+  try {
+    // Vérifier le token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+
+    // S'assurer que decoded est un objet et contient l'email
+    if (typeof decoded !== "object" || !decoded.email) {
+      return res.status(400).send({ message: "Invalid token" });
+    }
+
+    // Trouver l'utilisateur par l'email inclus dans le token
+    const asso = await Asso.findOne({ email: decoded.email });
+
+    if (!asso) {
+      return res.status(404).send({ message: "Asso not found" });
+    }
+
+    // Hasher le nouveau mot de passe
+    const hashedPassword = password
+      ? await bcrypt.hash(password, 10)
+      : undefined;
+
+    // Mettre à jour le mot de passe de l'utilisateur
+    const updatedAsso = await Asso.findByIdAndUpdate(
+      asso._id,
+      { password: hashedPassword },
+      { new: true }
+    );
+
+    if (!updatedAsso) {
+      return res.status(404).send("User not found");
+    }
+
+    res.json({
+      message: "Password updated successfully",
+      user: updatedAsso,
+    });
+  } catch (err) {
+    if (err instanceof jwt.JsonWebTokenError) {
+      return res.status(401).send({ message: "Invalid or expired token" });
+    }
+    console.error(err);
+    res.status(500).send({ message: "Error updating password" });
   }
 };
