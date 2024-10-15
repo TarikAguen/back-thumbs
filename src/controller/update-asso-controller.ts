@@ -46,7 +46,7 @@ export const updateAsso = async (req: Request, res: Response) => {
         password,
         nameasso,
         siret,
-        logo,
+        logo: logoUrl,
         description,
         presentation,
         website,
