@@ -224,7 +224,7 @@ export const getAllAsso = async (req: Request, res: Response) => {
   }
 };
 
-export const forgetPassword = async (req: Request, res: Response) => {
+export const forgetPasswordAsso = async (req: Request, res: Response) => {
   try {
     // Find the user by email
     const asso = await Asso.findOne({ email: req.body.email });
@@ -270,7 +270,7 @@ export const forgetPassword = async (req: Request, res: Response) => {
     res.status(500).send({ message: err.message });
   }
 };
-export const resetPassword = async (req: Request, res: Response) => {
+export const resetPasswordAsso = async (req: Request, res: Response) => {
   const { token } = req.params;
   const { password } = req.body;
 

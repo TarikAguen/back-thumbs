@@ -7,8 +7,6 @@ import {
   getProfilDetails,
   getAllInterests,
   getUserInterest,
-  forgetPassword,
-  resetPassword,
 } from "../controller/update-profil-controller";
 
 const router = Router();
@@ -32,8 +30,7 @@ router.delete("/delete-profil", deleteProfil);
 router.get("/details", getProfilDetails);
 
 // mdp oublié
-router.post("/forget-password", forgetPassword);
-router.post("/reset-password", resetPassword);
+
 router.get("/interests", getAllInterests);
 router.get("/user-interests", getUserInterest);
 

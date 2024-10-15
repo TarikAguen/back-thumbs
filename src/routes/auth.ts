@@ -7,6 +7,10 @@ import {
   logout,
   checkRevokedToken,
 } from "../controller/auth-profil-controller";
+import {
+  forgetPassword,
+  resetPassword,
+} from "../controller/update-profil-controller";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -19,7 +23,8 @@ router.post("/login", login);
 
 // Route pour déconnecter un utilisateur
 router.post("/logout", logout);
-
+router.post("/forget-password", forgetPassword);
+router.post("/reset-password", resetPassword);
 // Middleware pour vérifier la révocation des tokens
 router.use(checkRevokedToken);
 
