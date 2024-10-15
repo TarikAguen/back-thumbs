@@ -3,33 +3,36 @@ import { Request, Response } from "express";
 import Message from "../models/Message";
 import User from "../models/User";
 import Asso from "../models/Asso";
-
 export const sendMessage = async (req: Request, res: Response) => {
-  const { senderId, receiverId, content } = req.body;
-
   try {
-    // Trouver le sender pour obtenir le type
-    const sender =
-      (await User.findById(senderId)) || (await Asso.findById(senderId));
-    const receiver =
-      (await User.findById(receiverId)) || (await Asso.findById(receiverId));
+    console.log("Received send message request:", req.body);
+    const { senderId, receiverId, content } = req.body;
+
+    console.log("Looking up sender and receiver in the database");
+    const sender = await User.findById(senderId);
+    const receiver = await User.findById(receiverId);
 
     if (!sender || !receiver) {
-      return res.status(404).send("Sender or Receiver not found");
+      console.log("Sender or receiver not found");
+      return res.status(404).send({ message: "Sender or receiver not found" });
     }
 
-    const newMessage = new Message({
-      senderId,
-      receiverId,
+    console.log("Creating message document");
+    const message = new Message({
+      sender: senderId,
+      receiver: receiverId,
       content,
-      onModel: sender.type, // Utilisation du champ 'type' pour définir la collection de référence
+      sentAt: new Date(),
     });
 
-    await newMessage.save();
-    res.status(201).json({ message: "Message sent", data: newMessage });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error sending message");
+    console.log("Saving message");
+    await message.save();
+
+    console.log("Message sent successfully");
+    res.status(200).send({ message: "Message sent successfully" });
+  } catch (error) {
+    console.error("Error sending message:", error);
+    res.status(500).send({ message: "Error sending message" });
   }
 };
 
