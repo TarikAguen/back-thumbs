@@ -9,8 +9,10 @@ export const sendMessage = async (req: Request, res: Response) => {
     const { senderId, receiverId, content } = req.body;
 
     console.log("Looking up sender and receiver in the database");
-    const sender = await User.findById(senderId);
-    const receiver = await User.findById(receiverId);
+    const sender =
+      (await User.findById(senderId)) || (await Asso.findById(senderId));
+    const receiver =
+      (await User.findById(receiverId)) || (await Asso.findById(receiverId));
 
     if (!sender || !receiver) {
       console.log("Sender or receiver not found");
