@@ -123,7 +123,7 @@ export const toggleParticipant = async (req: Request, res: Response) => {
     if (!event) {
       return res.status(404).send("Événement non trouvé");
     }
-
+    event.participants = event.participants ?? [];
     const participantIndex = event.participants.findIndex(
       (participant) => participant.id.toString() === id
     );
