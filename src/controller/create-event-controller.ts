@@ -142,7 +142,9 @@ export const toggleParticipant = async (req: Request, res: Response) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Erreur lors de la mise à jour des participants");
+    res
+      .status(500)
+      .send("Erreur lors de la mise à jour des participants " + err);
   }
 };
 // Fonction pour récupérer tous les événements
