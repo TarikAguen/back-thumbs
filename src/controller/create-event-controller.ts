@@ -114,7 +114,7 @@ export const getUserEvents = async (req: Request, res: Response) => {
 // Fonction pour ajouter ou supprimer un participant de l'événement
 export const toggleParticipant = async (req: Request, res: Response) => {
   const eventId = req.params.id;
-  const { id, firstName, lastName } = res.locals.user;
+  const { id } = res.locals.user;
 
   try {
     const event = await Event.findById(eventId);
@@ -135,7 +135,7 @@ export const toggleParticipant = async (req: Request, res: Response) => {
       await Event.updateOne(
         { _id: eventId },
         {
-          $push: { participants: { id, firstName, lastName } },
+          $push: { participants: { id } },
         }
       );
       res.status(200).json({ message: "Participant ajouté à l'événement" });
