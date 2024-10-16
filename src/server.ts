@@ -50,7 +50,7 @@ app.use("/asso", authenticateJWTAsso, AssoRoutes);
 app.use("/event", authenticateJWTAsso, EventRoutes);
 app.use("/geo", authenticateJWT, GeoRoutes);
 // app.use("/reset-password", PasswordRoutes);
-app.use("/messages", messageRoutes);
+app.use("/messages", authenticateJWT, messageRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
