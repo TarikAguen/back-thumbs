@@ -132,14 +132,20 @@ export const toggleParticipant = async (req: Request, res: Response) => {
     );
 
     if (participantIndex === -1) {
-      // Ajouter l'utilisateur s'il n'est pas déjà dans la liste
-      event.participants.push({ id, firstName, lastName });
-      await event.save();
+      await Event.updateOne(
+        { _id: eventId },
+        {
+          $push: { participants: { id, firstName, lastName } },
+        }
+      );
       res.status(200).json({ message: "Participant ajouté à l'événement" });
     } else {
-      // Retirer l'utilisateur s'il est déjà dans la liste
-      event.participants.splice(participantIndex, 1);
-      await event.save();
+      await Event.updateOne(
+        { _id: eventId },
+        {
+          $pull: { participants: { id } },
+        }
+      );
       res.status(200).json({ message: "Participant retiré de l'événement" });
     }
   } catch (err) {
