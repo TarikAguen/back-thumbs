@@ -40,9 +40,7 @@ const EventSchema: Schema = new Schema(
     participants: {
       type: [
         {
-          id: { type: Schema.Types.ObjectId, ref: "User" },
-          firstName: { type: String },
-          lastName: { type: String },
+          id: { type: Schema.Types.ObjectId, ref: "User" }, // on recup que l'id de l'user
         },
       ],
       default: [],
