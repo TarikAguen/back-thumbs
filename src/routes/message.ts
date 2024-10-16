@@ -4,6 +4,6 @@ import { sendMessage, getMessages } from "../controller/message-controller";
 const router = Router();
 
 router.post("/send", sendMessage);
-router.get("/get", getMessages);
+router.get("/get/:userId", getMessages);
 
 export default router;
