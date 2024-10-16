@@ -98,7 +98,7 @@ export const getUserEvents = async (req: Request, res: Response) => {
     if (events.length === 0) {
       return res
         .status(404)
-        .send("Aucun événement trouvé pour cet utilisateur");
+        .send("Aucun événement trouvé pour cet utilisateur" + events);
     }
 
     res.json({
