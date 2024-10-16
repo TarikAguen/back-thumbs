@@ -143,7 +143,7 @@ export const toggleParticipant = async (req: Request, res: Response) => {
       await Event.updateOne(
         { _id: eventId },
         {
-          $pull: { participants: { id } },
+          $pull: { participants: { id: mongoose.Types.ObjectId(id) } },
         }
       );
       res.status(200).json({ message: "Participant retiré de l'événement" });
