@@ -106,9 +106,9 @@ export const getUserEvents = async (req: Request, res: Response) => {
       message: "Événements récupérés avec succès",
       events,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    res.status(500).send("Erreur lors de la récupération des événements");
+    res.status(500).send("Erreur lors de la récupération des événements" + err);
   }
 };
 
