@@ -125,7 +125,7 @@ export const toggleParticipant = async (req: Request, res: Response) => {
     }
     event.participants = event.participants ?? [];
     const participantIndex = event.participants.findIndex(
-      (participant) => participant.id.toString() === id
+      (participant) => participant === id
     );
 
     if (participantIndex === -1) {
