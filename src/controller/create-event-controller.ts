@@ -4,6 +4,7 @@ import s3 from "../config/s3";
 import User from "../models/User";
 import Asso from "../models/Asso";
 import geocodeAddress from "../config/geocode";
+import { ObjectId } from "mongodb";
 
 // Fonction pour l'inscription d'une association
 export const createEvent = async (req: Request, res: Response) => {
@@ -88,7 +89,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
   }
 };
 export const getUserEvents = async (req: Request, res: Response) => {
-  const userId = res.locals.user.userId; // L'ID de l'utilisateur connecté
+  const userId = new ObjectId(res.locals.user.userId); // L'ID de l'utilisateur connecté
 
   try {
     // Rechercher les événements où l'utilisateur est dans la liste des participants par son ID
