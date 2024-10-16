@@ -15,6 +15,7 @@ interface IEvent extends Document {
   photo?: string;
   city?: string;
   postalcode?: number;
+  creationdate?: Date;
   address?: string;
   participants?: IParticipant[];
   interests?: string[];
@@ -35,6 +36,7 @@ const EventSchema: Schema = new Schema(
     postalcode: { type: Number },
     address: { type: String },
     subdescription: { type: String },
+    creationdate: { type: Date, required: true },
     participants: {
       type: [
         {

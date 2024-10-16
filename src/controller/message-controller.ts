@@ -27,8 +27,20 @@ export const sendMessage = async (req: Request, res: Response) => {
       onModel: senderModel, // ou receiverModel si vous voulez spécifier le destinataire
     });
 
-    await message.save();
-    res.status(200).send({ message: "Message sent successfully" });
+    const savedMessage = await message.save();
+    // Envoi du message via Socket.io
+    req.app.get("io").emit("receive_message", {
+      senderId,
+      receiverId,
+      content,
+      messageId: savedMessage._id, // transmet l'ID du message pour référence future
+      sentAt: savedMessage.sentAt,
+    });
+
+    res.status(200).send({
+      message: "Message sent successfully",
+      messageId: savedMessage._id,
+    });
   } catch (error) {
     console.error("Error sending message:", error);
     res.status(500).send({ message: "Error sending message" });
