@@ -40,8 +40,8 @@ export const getMessages = async (req: Request, res: Response) => {
 
   try {
     const messages = await Message.find({
-      $or: [{ senderId: userId }, { receiverId: userId }],
-    }).populate("senderId receiverId", "email nameasso");
+      $or: [{ sender: userId }, { receiver: userId }],
+    }).populate("sender receiver", "email nameasso");
 
     res.json(messages);
   } catch (err) {
