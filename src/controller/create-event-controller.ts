@@ -5,6 +5,7 @@ import s3 from "../config/s3";
 import User from "../models/User";
 import Asso from "../models/Asso";
 import geocodeAddress from "../config/geocode";
+import mongoose from "mongoose";
 
 // Fonction pour l'inscription d'une association
 export const createEvent = async (req: Request, res: Response) => {
@@ -114,7 +115,7 @@ export const getUserEvents = async (req: Request, res: Response) => {
 // Fonction pour ajouter ou supprimer un participant de l'événement
 export const toggleParticipant = async (req: Request, res: Response) => {
   const eventId = req.params.id;
-  const { id } = res.locals.user;
+  const { id } = res.locals.user; // Assure-toi que cet ID est toujours une chaîne.
 
   try {
     const event = await Event.findById(eventId);
@@ -123,15 +124,12 @@ export const toggleParticipant = async (req: Request, res: Response) => {
       return res.status(404).send("Événement non trouvé");
     }
 
-    if (!event.participants) {
-      event.participants = []; // Initialisation au besoin
-    }
-
     const participantIndex = event.participants.findIndex(
       (participant) => participant.id.toString() === id
     );
 
     if (participantIndex === -1) {
+      // Ajouter l'utilisateur s'il n'est pas déjà dans la liste
       await Event.updateOne(
         { _id: eventId },
         {
@@ -140,10 +138,11 @@ export const toggleParticipant = async (req: Request, res: Response) => {
       );
       res.status(200).json({ message: "Participant ajouté à l'événement" });
     } else {
+      // Retirer l'utilisateur s'il est déjà dans la liste
       await Event.updateOne(
         { _id: eventId },
         {
-          $pull: { participants: { id: mongoose.Types.ObjectId(id) } },
+          $pull: { participants: { id } },
         }
       );
       res.status(200).json({ message: "Participant retiré de l'événement" });
@@ -152,9 +151,10 @@ export const toggleParticipant = async (req: Request, res: Response) => {
     console.error(err);
     res
       .status(500)
-      .send("Erreur lors de la mise à jour des participants " + err);
+      .send("Erreur lors de la mise à jour des participants: " + err.message);
   }
 };
+
 // Fonction pour récupérer tous les événements
 export const getAllEvents = async (req: Request, res: Response) => {
   try {
