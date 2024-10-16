@@ -17,6 +17,7 @@ export const createEvent = async (req: Request, res: Response) => {
       city,
       postalcode,
       address,
+      creationdate,
       participants,
       interests,
     } = req.body;
@@ -46,6 +47,7 @@ export const createEvent = async (req: Request, res: Response) => {
       postalcode,
       address,
       participants,
+      creationdate,
       interests,
       photo: photoUrl, // Inclure la photo si elle existe
       location: {
