@@ -25,7 +25,7 @@ router.post("/login", login);
 router.post("/logout", logout);
 // Route mdp oublié
 router.post("/forget-password", forgetPassword);
-router.post("/reset-password/:id", resetPassword);
+router.post("/reset-password/:token", resetPassword);
 // Middleware pour vérifier la révocation des tokens
 router.use(checkRevokedToken);
 
