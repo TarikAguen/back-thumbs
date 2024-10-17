@@ -92,7 +92,7 @@ export const getUserEvents = async (req: Request, res: Response) => {
 
   try {
     // Rechercher les événements où l'utilisateur est dans la liste des participants par son ID
-    const events = await Event.find({ "participants.id": userId });
+    const events = await Event.find({ "participants._id": userId });
 
     if (events.length === 0) {
       return res
@@ -109,7 +109,6 @@ export const getUserEvents = async (req: Request, res: Response) => {
     res.status(500).send("Erreur lors de la récupération des événements" + err);
   }
 };
-
 // Fonction pour ajouter ou supprimer un participant de l'événement
 export const toggleParticipant = async (req: Request, res: Response) => {
   const eventId = req.params.id;
