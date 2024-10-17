@@ -113,7 +113,7 @@ export const getUserEvents = async (req: Request, res: Response) => {
 // Fonction pour ajouter ou supprimer un participant de l'événement
 export const toggleParticipant = async (req: Request, res: Response) => {
   const eventId = req.params.id;
-  const userId = res.locals.user.id; // Assurez-vous que l'authentification est en place pour avoir cet ID
+  const userId = res.locals.user.userId; // Assurez-vous que l'authentification est en place pour avoir cet ID
 
   try {
     const event = await Event.findById(eventId);
