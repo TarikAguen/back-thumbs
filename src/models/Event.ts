@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 interface IParticipant {
   id: mongoose.Types.ObjectId;
   _id: mongoose.Types.ObjectId;
+  participants: mongoose.Types.ObjectId[];
   firstName: string;
   lastName: string;
 }

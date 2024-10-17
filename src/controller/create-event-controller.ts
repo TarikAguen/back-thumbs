@@ -113,36 +113,34 @@ export const getUserEvents = async (req: Request, res: Response) => {
 // Fonction pour ajouter ou supprimer un participant de l'événement
 export const toggleParticipant = async (req: Request, res: Response) => {
   const eventId = req.params.id;
-  const userId = res.locals.user.id; // Assurez-vous que cet ID est correctement passé et utilisé.
+  const userId = new mongoose.Types.ObjectId(res.locals.user.id); // S'assurer que c'est un ObjectId valide
 
   try {
     const event = await Event.findById(eventId);
-
-    if (!event) {
-      return res.status(404).send("Événement non trouvé");
+    if (!event || !event.participants) {
+      return res
+        .status(404)
+        .send("Événement non trouvé ou participants indéfinis");
     }
-    event.participants = event.participants ?? [];
 
-    const participantIndex = event.participants.indexOf(userId);
+    const isParticipant = event.participants.some((id) => id.equals(userId));
 
-    if (participantIndex === -1) {
-      // Ajouter l'utilisateur s'il n'est pas déjà dans la liste
-      event.participants.push(userId);
+    if (isParticipant) {
+      // Retirer le participant
+      await Event.updateOne(
+        { _id: eventId },
+        { $pull: { participants: userId } }
+      );
+      res.status(200).json({ message: "Participant retiré de l'événement" });
     } else {
-      // Retirer l'utilisateur s'il est déjà dans la liste
-      event.participants.splice(participantIndex, 1);
+      // Ajouter le participant
+      await Event.updateOne(
+        { _id: eventId },
+        { $addToSet: { participants: userId } }
+      );
+      res.status(200).json({ message: "Participant ajouté à l'événement" });
     }
-
-    await event.save(); // Sauvegarder les modifications dans la base de données
-    res.status(200).json({
-      message:
-        participantIndex === -1
-          ? "Participant ajouté à l'événement"
-          : "Participant retiré de l'événement",
-      event,
-      userId,
-    });
-  } catch (err: any) {
+  } catch (err) {
     console.error(err);
     res
       .status(500)
