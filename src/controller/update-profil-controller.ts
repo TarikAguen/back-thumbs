@@ -291,11 +291,11 @@ export const getUserById = async (req: Request, res: Response) => {
 
     // Renvoyer les données de l'événement
     res.json({
-      message: "Détails de l'événement récupérés avec succès",
-      event,
+      message: "Détails de l'user récupérés avec succès",
+      user,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Erreur lors de la récupération de l'événement");
+    res.status(500).send("Erreur lors de la récupération de l'user");
   }
 };

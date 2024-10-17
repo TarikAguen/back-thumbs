@@ -243,6 +243,77 @@ export const getEventById = async (req: Request, res: Response) => {
     res.status(500).send("Erreur lors de la récupération de l'événement");
   }
 };
+// Fonction pour mettre à jour un événement
+export const updateEvent = async (req: Request, res: Response) => {
+  const eventId = req.params.id;
+
+  try {
+    const {
+      eventName,
+      description,
+      subdescription,
+      city,
+      postalcode,
+      address,
+      creationdate,
+      participants,
+      interests,
+    } = req.body;
+
+    let photoUrl = undefined;
+
+    // S3 if photo
+    if (req.file) {
+      const params = {
+        Bucket: process.env.S3_BUCKET_NAME!,
+        Key: `${Date.now()}-${req.file.originalname}`,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+      };
+
+      const uploadResult = await s3.upload(params).promise();
+      photoUrl = uploadResult.Location; // Stocker l'URL de la photo si une nouvelle est fournie
+    }
+
+    const { latitude, longitude } = await geocodeAddress(address);
+
+    const update = {
+      eventName,
+      description,
+      subdescription,
+      city,
+      postalcode,
+      address,
+      participants,
+      creationdate,
+      interests,
+      ...(photoUrl && { photo: photoUrl }), // Inclure la nouvelle photo si elle existe
+      location: {
+        type: "Point",
+        coordinates: [longitude, latitude],
+      },
+    };
+
+    // Mise à jour de l'événement
+    const updatedEvent = await Event.findByIdAndUpdate(eventId, update, {
+      new: true,
+    });
+
+    if (!updatedEvent) {
+      return res.status(404).send("Événement non trouvé");
+    }
+
+    res.json({
+      message: "Événement mis à jour avec succès",
+      event: updatedEvent,
+    });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send("Erreur lors de la mise à jour de l'événement: " + err.message);
+  }
+};
 
 // Middleware pour vérifier la révocation des tokens
 export const checkRevokedToken = (req: Request, res: Response, next: any) => {

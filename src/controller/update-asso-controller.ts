@@ -322,3 +322,26 @@ export const resetPasswordAsso = async (req: Request, res: Response) => {
     res.status(500).send({ message: "Error updating password" });
   }
 };
+
+// Fonction pour récupérer un événement par ID
+export const getgAssoById = async (req: Request, res: Response) => {
+  const assoId = req.params.id;
+
+  try {
+    // Rechercher par ID dans la bdd
+    const asso = await Asso.findById(assoId);
+
+    if (!asso) {
+      return res.status(404).send("Événement non trouvé");
+    }
+
+    // Renvoyer les données de l'événement
+    res.json({
+      message: "Détails de l'asso récupérés avec succès",
+      asso,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération de l'asso");
+  }
+};

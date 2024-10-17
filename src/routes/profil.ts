@@ -7,6 +7,7 @@ import {
   getProfilDetails,
   getAllInterests,
   getUserInterest,
+  getUserById,
 } from "../controller/update-profil-controller";
 
 const router = Router();
@@ -28,6 +29,7 @@ router.delete("/delete-profil", deleteProfil);
 
 // Route pour récupérer les détails du profil
 router.get("/details", getProfilDetails);
+router.get("/getDetails-user/:id", getUserById);
 
 // mdp oublié
 

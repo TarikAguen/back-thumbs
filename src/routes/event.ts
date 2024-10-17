@@ -8,6 +8,7 @@ import {
   getAllEvents,
   filterByInterestsAndType,
   getEventById,
+  updateEvent,
 } from "../controller/create-event-controller";
 
 const router = Router();
@@ -20,8 +21,9 @@ router.get("/events", getAllEvents);
 router.post("/:id/toggle-participant", toggleParticipant);
 // Route pour filtrer les événements par intérêts
 router.get("/event-filter", filterByInterestsAndType);
-router.get("/getEvent/:id", getEventById);
+router.get("/getEvent/:id", getEventById); // Fonction pour récupérer un événement par ID
 // Route pour supprimer un événement
 router.delete("/delete-event/:id", deleteEvent); // :id pour spécifier l'événement à supprimer
+router.put("/update-event/:id", upload.single("photo"), updateEvent);
 
 export default router;
