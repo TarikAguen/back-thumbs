@@ -123,9 +123,7 @@ export const toggleParticipant = async (req: Request, res: Response) => {
     }
     event.participants = event.participants ?? [];
 
-    const participantIndex = event.participants.findIndex(
-      (participant) => participant.toString() === userId.toString()
-    );
+    const participantIndex = event.participants.indexOf(userId);
 
     if (participantIndex === -1) {
       // Ajouter l'utilisateur s'il n'est pas déjà dans la liste
