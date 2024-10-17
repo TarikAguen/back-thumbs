@@ -1,13 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-interface IParticipant {
-  id: mongoose.Types.ObjectId;
-  _id: mongoose.Types.ObjectId;
-  participants: mongoose.Types.ObjectId[];
-  firstName: string;
-  lastName: string;
-}
-
 interface IEvent extends Document {
   type?: string;
   eventName?: string;
@@ -19,7 +11,7 @@ interface IEvent extends Document {
   postalcode?: number;
   creationdate?: Date;
   address?: string;
-  participants?: IParticipant[];
+  participants?: string[];
   interests?: string[];
   location: {
     type: { type: String; enum: ["Point"]; default: "Point" };
@@ -39,7 +31,7 @@ const EventSchema = new Schema(
     address: { type: String },
     subdescription: { type: String },
     creationdate: { type: Date, required: true },
-    participants: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    participants: { type: [String], ref: "User", default: [] },
     interests: [String],
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
