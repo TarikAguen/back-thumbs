@@ -156,7 +156,7 @@ export const toggleParticipant = async (req: Request, res: Response) => {
               : "Participant retiré de l'événement",
           event, // Retourner l'événement mis à jour
         });
-      } catch (err) {
+      } catch (err: any) {
         console.error("Erreur lors de la mise à jour des participants:", err);
         res
           .status(500)
