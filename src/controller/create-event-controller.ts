@@ -142,7 +142,9 @@ export const toggleParticipant = async (req: Request, res: Response) => {
           $pull: { participants: { id } },
         }
       );
-      res.status(200).json({ message: "Participant retiré de l'événement" });
+      res
+        .status(200)
+        .json({ message: "Participant retiré de l'événement" + id });
     }
   } catch (err: any) {
     console.error(err);
