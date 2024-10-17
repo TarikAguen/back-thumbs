@@ -94,11 +94,11 @@ export const getUserEvents = async (req: Request, res: Response) => {
     // Rechercher les événements où l'utilisateur est dans la liste des participants par son ID
     const events = await Event.find({ "participants._id": userId });
 
-    if (events.length === 0) {
-      return res
-        .status(404)
-        .send("Aucun événement trouvé pour cet utilisateur");
-    }
+    // if (events.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .send("Aucun événement trouvé pour cet utilisateur");
+    // }
 
     res.json({
       message: "Événements récupérés avec succès",
