@@ -112,7 +112,7 @@ export const getUserEvents = async (req: Request, res: Response) => {
 };
 // Fonction pour ajouter ou supprimer un participant de l'événement
 export const toggleParticipant = async (req: Request, res: Response) => {
-  const eventId = req.params.id; // Récupère l'ID de l'événement à partir de l'URL
+  const eventId = req.params.id;
   const userId = res.locals.user.id; // Assurez-vous que l'authentification est en place pour avoir cet ID
 
   try {
@@ -122,50 +122,10 @@ export const toggleParticipant = async (req: Request, res: Response) => {
       return res.status(404).send("Événement non trouvé");
     }
 
+    // Initialiser participants comme un tableau vide si jamais il est undefined
+    event.participants = event.participants ?? [];
+
     // Vérifier si l'utilisateur est déjà un participant
-    export const toggleParticipant = async (req: Request, res: Response) => {
-      const eventId = req.params.id;
-      const userId = res.locals.user.id; // Assurez-vous que l'authentification est en place pour avoir cet ID
-
-      try {
-        const event = await Event.findById(eventId);
-
-        if (!event) {
-          return res.status(404).send("Événement non trouvé");
-        }
-
-        // Initialiser participants comme un tableau vide si jamais il est undefined
-        event.participants = event.participants ?? [];
-
-        // Vérifier si l'utilisateur est déjà un participant
-        const participantIndex = event.participants.indexOf(userId);
-
-        if (participantIndex === -1) {
-          // Ajouter l'utilisateur s'il n'est pas déjà dans la liste
-          event.participants.push(userId);
-        } else {
-          // Retirer l'utilisateur s'il est déjà dans la liste
-          event.participants.splice(participantIndex, 1);
-        }
-
-        await event.save(); // Sauvegarder les modifications dans la base de données
-        res.status(200).json({
-          message:
-            participantIndex === -1
-              ? "Participant ajouté à l'événement"
-              : "Participant retiré de l'événement",
-          event, // Retourner l'événement mis à jour
-        });
-      } catch (err: any) {
-        console.error("Erreur lors de la mise à jour des participants:", err);
-        res
-          .status(500)
-          .send(
-            "Erreur lors de la mise à jour des participants: " + err.message
-          );
-      }
-    };
-
     const participantIndex = event.participants.indexOf(userId);
 
     if (participantIndex === -1) {
@@ -184,7 +144,7 @@ export const toggleParticipant = async (req: Request, res: Response) => {
           : "Participant retiré de l'événement",
       event, // Retourner l'événement mis à jour
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Erreur lors de la mise à jour des participants:", err);
     res
       .status(500)
