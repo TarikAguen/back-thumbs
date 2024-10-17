@@ -24,7 +24,7 @@ router.post("/login", loginAsso);
 router.post("/logout", logoutAsso);
 // Route mdp oublié
 router.post("/forget-password", forgetPasswordAsso);
-router.post("/reset-password", resetPasswordAsso);
+router.post("/reset-password/:token", resetPasswordAsso);
 
 // Middleware pour vérifier la révocation des tokens
 router.use(checkRevokedToken);
