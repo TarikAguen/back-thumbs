@@ -277,3 +277,25 @@ export const resetPassword = async (req: Request, res: Response) => {
     res.status(500).send({ message: "Error updating password" });
   }
 };
+// Fonction pour récupérer un événement par ID
+export const getUserById = async (req: Request, res: Response) => {
+  const eventId = req.params.id;
+
+  try {
+    // Rechercher par ID dans la bdd
+    const user = await User.findById(eventId);
+
+    if (!user) {
+      return res.status(404).send("Événement non trouvé");
+    }
+
+    // Renvoyer les données de l'événement
+    res.json({
+      message: "Détails de l'événement récupérés avec succès",
+      event,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération de l'événement");
+  }
+};
