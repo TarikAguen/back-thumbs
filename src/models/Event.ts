@@ -26,7 +26,7 @@ interface IEvent extends Document {
   };
 }
 
-const EventSchema: Schema = new Schema(
+const EventSchema = new Schema(
   {
     type: { type: String, default: "event" },
     eventName: { type: String, required: true },
@@ -38,18 +38,11 @@ const EventSchema: Schema = new Schema(
     address: { type: String },
     subdescription: { type: String },
     creationdate: { type: Date, required: true },
-    participants: {
-      type: [
-        {
-          _id: { type: Schema.Types.ObjectId, ref: "User" }, // on recup que l'id de l'user
-        },
-      ],
-      default: [],
-    },
-    interests: { type: [String] },
+    participants: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    interests: [String],
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
-      coordinates: { type: [Number], index: "2dsphere" }, // Important pour les requêtes géospatiales
+      coordinates: [Number],
     },
   },
   { collection: "event" }

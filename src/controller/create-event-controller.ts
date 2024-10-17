@@ -112,7 +112,7 @@ export const getUserEvents = async (req: Request, res: Response) => {
 // Fonction pour ajouter ou supprimer un participant de l'événement
 export const toggleParticipant = async (req: Request, res: Response) => {
   const eventId = req.params.id;
-  const { id } = res.locals.user; // Assure-toi que cet ID est toujours une chaîne.
+  const userId = res.locals.user.id; // Assurez-vous que cet ID est correctement passé et utilisé.
 
   try {
     const event = await Event.findById(eventId);
@@ -121,32 +121,26 @@ export const toggleParticipant = async (req: Request, res: Response) => {
       return res.status(404).send("Événement non trouvé");
     }
     event.participants = event.participants ?? [];
-    const participantIndex = event.participants.findIndex(
-      (participant) => participant.id === id
-    );
+
+    const participantIndex = event.participants.indexOf(userId);
 
     if (participantIndex === -1) {
       // Ajouter l'utilisateur s'il n'est pas déjà dans la liste
-      await Event.updateOne(
-        { _id: eventId },
-        {
-          $push: { participants: { id } },
-        }
-      );
-      res.status(200).json({ message: "Participant ajouté à l'événement" });
+      event.participants.push(userId);
     } else {
       // Retirer l'utilisateur s'il est déjà dans la liste
-      await Event.updateOne(
-        { _id: eventId },
-        {
-          $pull: { participants: { id } },
-        }
-      );
-      res
-        .status(200)
-        .json({ message: "Participant retiré de l'événement" + id });
+      event.participants.splice(participantIndex, 1);
     }
-  } catch (err: any) {
+
+    await event.save(); // Sauvegarder les modifications dans la base de données
+    res.status(200).json({
+      message:
+        participantIndex === -1
+          ? "Participant ajouté à l'événement"
+          : "Participant retiré de l'événement",
+      event,
+    });
+  } catch (err) {
     console.error(err);
     res
       .status(500)
