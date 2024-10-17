@@ -307,7 +307,7 @@ export const updateEvent = async (req: Request, res: Response) => {
       message: "Événement mis à jour avec succès",
       event: updatedEvent,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
     res
       .status(500)
