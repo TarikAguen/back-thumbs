@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import Event from "../models/Event";
 import s3 from "../config/s3";
 import User from "../models/User";
+import mongoose from "mongoose";
 import Asso from "../models/Asso";
 import geocodeAddress from "../config/geocode";
 
@@ -122,7 +123,9 @@ export const toggleParticipant = async (req: Request, res: Response) => {
     }
     event.participants = event.participants ?? [];
 
-    const participantIndex = event.participants.indexOf(userId);
+    const participantIndex = event.participants.findIndex(
+      (participant) => participant.toString() === userId.toString()
+    );
 
     if (participantIndex === -1) {
       // Ajouter l'utilisateur s'il n'est pas déjà dans la liste
@@ -139,6 +142,7 @@ export const toggleParticipant = async (req: Request, res: Response) => {
           ? "Participant ajouté à l'événement"
           : "Participant retiré de l'événement",
       event,
+      userId,
     });
   } catch (err: any) {
     console.error(err);
