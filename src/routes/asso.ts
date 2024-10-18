@@ -8,6 +8,7 @@ import {
   getAllAsso,
   getgAssoById,
 } from "../controller/update-asso-controller";
+import { filterAssos } from "../controller/filter-asso-controller";
 const upload = multer({ storage: multer.memoryStorage() }); // Importation du contrôleur
 
 const router = Router();
@@ -18,5 +19,6 @@ router.get("/asso-details", getAssoDetails); // Renvoie les details de l'asso
 router.delete("/delete", deleteAssoProfil); // Route qui supprime l'asso
 router.get("/getAllAsso", getAllAsso); // Route qui renvoie toutes les asso
 router.get("/getDetails-user/:id", getgAssoById);
+router.get("/filter", filterAssos);
 
 export default router;

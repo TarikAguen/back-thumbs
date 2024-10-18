@@ -10,6 +10,7 @@ import {
   getEventById,
   updateEvent,
 } from "../controller/create-event-controller";
+import { filterEvents } from "../controller/filter-event-controller";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -25,5 +26,6 @@ router.get("/getEvent/:id", getEventById); // Fonction pour récupérer un évé
 // Route pour supprimer un événement
 router.delete("/delete-event/:id", deleteEvent); // :id pour spécifier l'événement à supprimer
 router.put("/update-event/:id", upload.single("photo"), updateEvent);
+router.get("/filter", filterEvents);
 
 export default router;

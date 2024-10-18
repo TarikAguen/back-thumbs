@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import Interest from "../models/Interest";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import Event from "../models/Event";
+import Asso from "../models/Asso";
 import s3 from "../config/s3";
 import geocodeAddress from "../config/geocode";
 import { v4 as uuidv4 } from "uuid";
@@ -299,3 +301,5 @@ export const getUserById = async (req: Request, res: Response) => {
     res.status(500).send("Erreur lors de la récupération de l'user");
   }
 };
+
+//filtres
