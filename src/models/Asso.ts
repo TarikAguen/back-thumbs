@@ -10,7 +10,7 @@ interface IAsso extends Document {
   description?: string;
   presentation?: string;
   website?: string;
-  telephone?: number;
+  telephone?: string;
   creationdate?: Date;
   city?: string;
   postalcode?: number;
@@ -30,7 +30,7 @@ const AssoSchema: Schema = new Schema(
     nameasso: { type: String, required: true },
     siret: { type: Number, required: true },
     logo: { type: String, default: "placeholder" },
-    telephone: { type: Number, required: true },
+    telephone: { type: String, required: true },
     creationdate: { type: Date, required: true },
     interests: { type: [String], required: true },
     city: { type: String, required: true },
