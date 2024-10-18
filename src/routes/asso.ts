@@ -18,7 +18,7 @@ router.post("/profilupdate", profilUpdate); // Route qui appelle la fonction du 
 router.get("/asso-details", getAssoDetails); // Renvoie les details de l'asso
 router.delete("/delete", deleteAssoProfil); // Route qui supprime l'asso
 router.get("/getAllAsso", getAllAsso); // Route qui renvoie toutes les asso
-router.get("/getDetails-user/:id", getgAssoById);
+router.get("/getDetails-asso/:id", getgAssoById);
 router.get("/filter", filterAssos);
 
 export default router;
