@@ -18,7 +18,7 @@ interface IAsso extends Document {
   interests?: string[];
   location: {
     type: { type: String; enum: ["Point"]; default: "Point" };
-    coordinates: { type: [Number]; index: "2dsphere" }; // Longitude (E/W), Latitude (N/S)
+    coordinates: number[]; // Longitude (E/W), Latitude (N/S)
   };
 }
 
@@ -41,11 +41,14 @@ const AssoSchema: Schema = new Schema(
     website: { type: String },
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
-      coordinates: { type: [Number], index: "2dsphere" }, // Important pour les requêtes géospatiales
+      coordinates: { type: [Number], required: true }, // Longitude (E/W), Latitude (N/S)
     },
   },
   { collection: "asso" }
 );
 
-const User = mongoose.model<IAsso>("Asso", AssoSchema);
-export default User;
+// Déclaration explicite de l'index géospatial `2dsphere`
+AssoSchema.index({ location: "2dsphere" });
+
+const Asso = mongoose.model<IAsso>("Asso", AssoSchema);
+export default Asso;
