@@ -15,7 +15,7 @@ interface IEvent extends Document {
   interests?: string[];
   location: {
     type: { type: String; enum: ["Point"]; default: "Point" };
-    coordinates: { type: [Number]; index: "2dsphere" }; // Longitude (E/W), Latitude (N/S)
+    coordinates: { type: [number]; index: "2dsphere" }; // Longitude (E/W), Latitude (N/S)
   };
 }
 
@@ -35,7 +35,7 @@ const EventSchema = new Schema(
     interests: [String],
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
-      coordinates: [Number],
+      coordinates: { type: [Number], index: "2dsphere" }, // Longitude (E/W), Latitude (N/S)
     },
   },
   { collection: "event" }
