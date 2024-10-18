@@ -8,14 +8,23 @@ export const filterAssos = async (req: Request, res: Response) => {
 
   // Si la longitude, latitude et la distance sont fournies, on ajoute le filtre géographique
   if (longitude && latitude && distance) {
-    const long = parseFloat(longitude as string);
-    const lat = parseFloat(latitude as string);
-    const radiusInMeters = parseFloat(distance as string) * 1000;
+    if (
+      typeof longitude !== "string" ||
+      typeof latitude !== "string" ||
+      typeof distance !== "string"
+    ) {
+      return res
+        .status(400)
+        .send("Longitude, Latitude, and Radius are required as strings.");
+    }
+    const long = parseFloat(longitude);
+    const lat = parseFloat(latitude);
+    const radiusInMeters = parseFloat(distance) * 1000;
 
     // Vérification que longitude, latitude, et distance sont bien des nombres valides
     if (!isNaN(long) && !isNaN(lat) && !isNaN(radiusInMeters)) {
       query.location = {
-        $near: {
+        $nearSphere: {
           $geometry: { type: "Point", coordinates: [long, lat] },
           $maxDistance: radiusInMeters,
         },
