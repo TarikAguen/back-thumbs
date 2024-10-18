@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import Event from "../models/Event";
 
 export const filterEvents = async (req: Request, res: Response) => {
-  const { interests, distance, eventName, longitude, latitude } = req.query;
+  const { interests, distance, eventName, longitude, latitude, sort } =
+    req.query;
 
   const query: any = {};
 
@@ -43,22 +44,31 @@ export const filterEvents = async (req: Request, res: Response) => {
     query.interests = { $in: interests };
   }
 
-  // Si un nom d'association est fourni, on ajoute le filtre par nom
+  // Si un nom d'événement est fourni, on ajoute le filtre par nom
   if (eventName) {
-    query.nameasso = { $regex: eventName, $options: "i" }; // Recherche insensible à la casse
+    query.eventName = { $regex: eventName, $options: "i" }; // Recherche insensible à la casse
   }
 
   try {
-    // Recherche des associations selon les filtres appliqués
-    const events = await Event.find(query);
-    if (events.length === 0) {
-      return res.status(404).send("Aucune association trouvée.");
+    // Gestion du tri (ordre croissant ou décroissant selon la date de création)
+    let sortOption = {};
+    if (sort === "asc") {
+      sortOption = { creationdate: 1 }; // Tri croissant par date de création
+    } else if (sort === "desc") {
+      sortOption = { creationdate: -1 }; // Tri décroissant par date de création
     }
-    res.json({ message: "Associations filtrées avec succès", events });
+
+    // Recherche des événements selon les filtres appliqués et le tri
+    const events = await Event.find(query).sort(sortOption);
+    if (events.length === 0) {
+      return res.status(404).send("Aucun événement trouvé.");
+    }
+
+    res.json({ message: "Événements filtrés avec succès", events });
   } catch (err: any) {
     console.error(err);
     res
       .status(500)
-      .send("Erreur lors de la filtration des associations: " + err.message);
+      .send("Erreur lors de la filtration des événements: " + err.message);
   }
 };
