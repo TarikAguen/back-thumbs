@@ -246,56 +246,48 @@ export const getEventById = async (req: Request, res: Response) => {
 // Fonction pour mettre à jour un événement
 export const updateEvent = async (req: Request, res: Response) => {
   const eventId = req.params.id;
+  const {
+    eventName,
+    description,
+    subdescription,
+    city,
+    postalcode,
+    address,
+    creationdate,
+    participants,
+    interests,
+  } = req.body;
 
   try {
-    const {
-      eventName,
-      description,
-      subdescription,
-      city,
-      postalcode,
-      address,
-      creationdate,
-      participants,
-      interests,
-    } = req.body;
-
+    // Gestion du téléchargement de la photo
     let photoUrl = undefined;
-
-    // S3 if photo
     if (req.file) {
       const params = {
         Bucket: process.env.S3_BUCKET_NAME!,
-        Key: `${Date.now()}-${req.file.originalname}`,
+        Key: `${uuidv4()}-${req.file.originalname}`,
         Body: req.file.buffer,
         ContentType: req.file.mimetype,
       };
 
       const uploadResult = await s3.upload(params).promise();
-      photoUrl = uploadResult.Location; // Stocker l'URL de la photo si une nouvelle est fournie
+      photoUrl = uploadResult.Location;
     }
 
-    const { latitude, longitude } = await geocodeAddress(address);
-
-    const update = {
+    // Construction dynamique des données à mettre à jour
+    const updateData: any = {
       eventName,
       description,
       subdescription,
       city,
       postalcode,
-      address,
-      participants,
       creationdate,
+      participants,
       interests,
-      ...(photoUrl && { photo: photoUrl }), // Inclure la nouvelle photo si elle existe
-      location: {
-        type: "Point",
-        coordinates: [longitude, latitude],
-      },
+      ...(photoUrl && { photo: photoUrl }),
     };
 
-    // Mise à jour de l'événement
-    const updatedEvent = await Event.findByIdAndUpdate(eventId, update, {
+    // Mise à jour de l'événement sans la localisation
+    const updatedEvent = await Event.findByIdAndUpdate(eventId, updateData, {
       new: true,
     });
 
@@ -303,12 +295,39 @@ export const updateEvent = async (req: Request, res: Response) => {
       return res.status(404).send("Événement non trouvé");
     }
 
+    // Si une nouvelle adresse est fournie, géocoder et mettre à jour la localisation
+    if (address) {
+      const { latitude, longitude } = await geocodeAddress(address);
+
+      const locationUpdate = await Event.findByIdAndUpdate(
+        eventId,
+        {
+          location: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          address, // Mettre à jour aussi l'adresse si elle est fournie
+        },
+        { new: true }
+      );
+
+      if (!locationUpdate) {
+        return res.status(404).send("Mise à jour de la localisation échouée");
+      }
+
+      return res.json({
+        message: "Événement et localisation mis à jour avec succès",
+        event: locationUpdate,
+      });
+    }
+
+    // Réponse si la mise à jour ne concerne pas l'adresse
     res.json({
       message: "Événement mis à jour avec succès",
       event: updatedEvent,
     });
   } catch (err: any) {
-    console.error(err);
+    console.error("Erreur lors de la mise à jour de l'événement", err);
     res
       .status(500)
       .send("Erreur lors de la mise à jour de l'événement: " + err.message);
