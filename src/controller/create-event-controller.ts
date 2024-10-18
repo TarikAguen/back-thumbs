@@ -5,6 +5,7 @@ import User from "../models/User";
 import mongoose from "mongoose";
 import Asso from "../models/Asso";
 import geocodeAddress from "../config/geocode";
+import { v4 as uuidv4 } from "uuid";
 
 // Fonction pour l'inscription d'une association
 export const createEvent = async (req: Request, res: Response) => {

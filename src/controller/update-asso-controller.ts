@@ -332,7 +332,7 @@ export const getgAssoById = async (req: Request, res: Response) => {
     const asso = await Asso.findById(assoId);
 
     if (!asso) {
-      return res.status(404).send("Événement non trouvé");
+      return res.status(404).send("Asso non trouvé");
     }
 
     // Renvoyer les données de l'événement
