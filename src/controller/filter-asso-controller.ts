@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import Asso from "../models/Asso";
-import { Request, Response } from "express";
-import Asso from "../models/Asso";
 
 export const filterAssos = async (req: Request, res: Response) => {
   const { interests, distance, nameasso, longitude, latitude } = req.query;
