@@ -11,7 +11,12 @@ interface IEvent extends Document {
   postalcode?: number;
   creationdate?: Date;
   address?: string;
-  participants?: string[];
+  participants?: {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    photo: string;
+  }[];
   interests?: string[];
   location: {
     type: { type: String; enum: ["Point"]; default: "Point" };
@@ -31,7 +36,14 @@ const EventSchema = new Schema(
     address: { type: String },
     subdescription: { type: String },
     creationdate: { type: Date, required: true },
-    participants: { type: [String], ref: "User", default: [] },
+    participants: [
+      {
+        userId: { type: String, ref: "User" },
+        firstName: { type: String },
+        lastName: { type: String },
+        photo: { type: String },
+      },
+    ],
     interests: [String],
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },

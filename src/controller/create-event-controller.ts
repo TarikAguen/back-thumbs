@@ -127,11 +127,27 @@ export const toggleParticipant = async (req: Request, res: Response) => {
     event.participants = event.participants ?? [];
 
     // Vérifier si l'utilisateur est déjà un participant
-    const participantIndex = event.participants.indexOf(userId);
+    const participantIndex = event.participants.findIndex(
+      (participant) => participant.userId === userId
+    );
 
     if (participantIndex === -1) {
-      // Ajouter l'utilisateur s'il n'est pas déjà dans la liste
-      event.participants.push(userId);
+      // Si l'utilisateur n'est pas déjà dans la liste, on récupère ses informations
+      const user = await User.findById(userId).select(
+        "firstName lastName photo"
+      );
+
+      if (!user) {
+        return res.status(404).send("Utilisateur non trouvé");
+      }
+
+      // Ajouter l'utilisateur avec ses informations
+      event.participants.push({
+        userId: userId,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        photo: user.photo || "",
+      });
     } else {
       // Retirer l'utilisateur s'il est déjà dans la liste
       event.participants.splice(participantIndex, 1);
