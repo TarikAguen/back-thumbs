@@ -5,8 +5,7 @@ import User from "../models/User";
 import Asso from "../models/Asso";
 export const sendMessage = async (req: Request, res: Response) => {
   try {
-    const { receiverId, content } = req.body;
-    const { senderId } = res.locals.user.userId;
+    const { senderId, receiverId, content } = req.body;
 
     // Tente de trouver l'expéditeur et le destinataire dans les utilisateurs ou les associations
     const sender =
