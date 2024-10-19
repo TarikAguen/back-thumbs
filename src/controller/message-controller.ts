@@ -83,3 +83,46 @@ export const getMessages = async (req: Request, res: Response) => {
     res.status(500).send("Error retrieving messages");
   }
 };
+
+export const getConversations = async (req: Request, res: Response) => {
+  const currentUserId = res.locals.user?.userId; // L'utilisateur authentifié
+
+  try {
+    if (!currentUserId) {
+      return res.status(401).send({ message: "Unauthorized access" });
+    }
+
+    // Récupérer toutes les conversations où l'utilisateur est impliqué (comme sender ou receiver)
+    const messages = await Message.find({
+      $or: [{ sender: currentUserId }, { receiver: currentUserId }],
+    });
+
+    // Utiliser un Set pour éviter les doublons
+    const conversationIds = new Set<string>();
+
+    messages.forEach((msg) => {
+      if (msg.sender.toString() !== currentUserId) {
+        conversationIds.add(msg.sender.toString());
+      }
+      if (msg.receiver.toString() !== currentUserId) {
+        conversationIds.add(msg.receiver.toString());
+      }
+    });
+
+    // Récupérer les informations des utilisateurs et associations
+    const users = await User.find({
+      _id: { $in: Array.from(conversationIds) },
+    });
+    const associations = await Asso.find({
+      _id: { $in: Array.from(conversationIds) },
+    });
+
+    // Fusionner les résultats utilisateurs et associations
+    const conversations = [...users, ...associations];
+
+    res.status(200).json(conversations);
+  } catch (error) {
+    console.error("Error retrieving conversations:", error);
+    res.status(500).send("Error retrieving conversations");
+  }
+};
