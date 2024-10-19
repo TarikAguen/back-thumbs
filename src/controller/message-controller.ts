@@ -54,11 +54,9 @@ export const sendMessage = async (req: Request, res: Response) => {
       message: "Message sent successfully",
       messageId: savedMessage._id,
     });
-  } catch (error) {
-    console.error("Error sending message:", error);
-    res
-      .status(500)
-      .send({ message: "Error sending message", error: error.message });
+  } catch (err: any) {
+    console.error("Error sending message:", err);
+    res.status(500).send({ message: "Error sending message", err });
   }
 };
 
