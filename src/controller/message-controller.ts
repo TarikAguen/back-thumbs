@@ -26,16 +26,14 @@ export const sendMessage = async (req: Request, res: Response) => {
     const senderModel = sender instanceof User ? "User" : "Asso";
     const receiverModel = receiver instanceof User ? "User" : "Asso";
     if (!sender || !receiver) {
-      return res
-        .status(404)
-        .send({
-          message:
-            "Sender or receiver not found" +
-            sender +
-            receiver +
-            senderId +
-            receiverId,
-        });
+      return res.status(404).send({
+        message:
+          "Sender or receiver not found" +
+          sender +
+          receiver +
+          senderId +
+          receiverId,
+      });
     }
 
     const message = new Message({
@@ -62,7 +60,7 @@ export const sendMessage = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error sending message:", error);
-    res.status(500).send({ message: "Error sending message" });
+    res.status(500).send({ message: "Error sending message", error });
   }
 };
 
