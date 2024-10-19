@@ -32,8 +32,8 @@ export const sendMessage = async (req: Request, res: Response) => {
     const savedMessage = await message.save();
     // Envoi du message via Socket.io
     req.app.get("io").emit("receive_message", {
-      senderId,
-      receiverId,
+      sender,
+      receiver,
       content,
       messageId: savedMessage._id, // transmet l'ID du message pour référence future
       sentAt: savedMessage.sentAt,
