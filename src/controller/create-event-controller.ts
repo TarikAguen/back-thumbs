@@ -90,7 +90,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
   }
 };
 export const getUserEvents = async (req: Request, res: Response) => {
-  const userId = res.locals.user.userId; // L'ID de l'utilisateur connecté
+  const userId = req.params.userId; // L'ID de l'utilisateur est maintenant fourni en paramètre
 
   try {
     // Rechercher les événements où l'utilisateur est dans la liste des participants par son ID
@@ -108,9 +108,12 @@ export const getUserEvents = async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error(err);
-    res.status(500).send("Erreur lors de la récupération des événements" + err);
+    res
+      .status(500)
+      .send("Erreur lors de la récupération des événements: " + err);
   }
 };
+
 // Fonction pour ajouter ou supprimer un participant de l'événement
 export const toggleParticipant = async (req: Request, res: Response) => {
   const eventId = req.params.id;

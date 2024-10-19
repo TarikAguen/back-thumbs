@@ -17,7 +17,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Route pour créer un événement
 router.post("/create-event", upload.single("photo"), createEvent);
-router.get("/getUser-event", getUserEvents);
+router.get("/getUser-event/:userId", getUserEvents);
 router.get("/events", getAllEvents);
 router.post("/toggle-participant/:id", toggleParticipant);
 // Route pour filtrer les événements par intérêts
