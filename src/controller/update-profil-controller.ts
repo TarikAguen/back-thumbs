@@ -279,19 +279,19 @@ export const resetPassword = async (req: Request, res: Response) => {
     res.status(500).send({ message: "Error updating password" });
   }
 };
-// Fonction pour récupérer un événement par ID
+// Fonction pour récupérer un user par ID
 export const getUserById = async (req: Request, res: Response) => {
-  const eventId = req.params.id;
+  const userId = req.params.id;
 
   try {
     // Rechercher par ID dans la bdd
-    const user = await User.findById(eventId);
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).send("Événement non trouvé");
     }
 
-    // Renvoyer les données de l'événement
+    // Renvoie données de l'user
     res.json({
       message: "Détails de l'user récupérés avec succès",
       user,
