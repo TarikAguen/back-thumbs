@@ -121,16 +121,37 @@ export const getConversationsWithLastMessage = async (
 
     // Récupérer les informations des utilisateurs ou associations avec qui les conversations ont eu lieu
     const conversationIds = messages.map((msg) => msg._id);
+
+    // Trouver les utilisateurs et associations
     const users = await User.find({ _id: { $in: conversationIds } });
     const associations = await Asso.find({ _id: { $in: conversationIds } });
 
+    // Fonction pour déterminer si la personne est un User ou une Asso
+    const getPersonInfo = (person: any) => {
+      if (person.firstName && person.lastName) {
+        return {
+          type: "user",
+          name: `${person.firstName} ${person.lastName}`,
+          photo: person.photo || null,
+        };
+      } else if (person.nameasso) {
+        return {
+          type: "asso",
+          name: person.nameasso,
+          photo: person.logo || null,
+        };
+      }
+      return null;
+    };
+
     // Fusionner les utilisateurs et les associations dans une seule liste
     const conversations = [...users, ...associations].map((person) => {
-      const lastMessage = messages.find(
-        (msg) => msg._id.toString() === person._id.toString()
-      );
+      const lastMessage = messages.find((msg) => msg._id === person._id);
+
+      const personInfo = getPersonInfo(person);
+
       return {
-        person,
+        person: personInfo,
         lastMessage: lastMessage
           ? lastMessage.lastMessage.content
           : "Pas de message",
