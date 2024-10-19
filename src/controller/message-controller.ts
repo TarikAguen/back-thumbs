@@ -61,12 +61,17 @@ export const sendMessage = async (req: Request, res: Response) => {
 };
 
 export const getMessages = async (req: Request, res: Response) => {
-  const currentUserId = req.params; // ID de l'utilisateur authentifié via JWT
+  const currentUserId = req.user.id; // L'ID de l'utilisateur authentifié, extrait du JWT
 
   try {
-    // Récupérer seulement les messages où l'utilisateur est impliqué
+    const { userId } = req.params; // ID du contact (autre utilisateur avec qui l'utilisateur est en conversation)
+
+    // Récupérer seulement les messages où l'utilisateur authentifié est soit l'expéditeur soit le destinataire
     const messages = await Message.find({
-      $or: [{ sender: currentUserId }, { receiver: currentUserId }],
+      $or: [
+        { sender: currentUserId, receiver: userId },
+        { sender: userId, receiver: currentUserId },
+      ],
     }).populate("sender receiver", "email nameasso");
 
     res.json(messages);
