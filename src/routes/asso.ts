@@ -13,7 +13,7 @@ const upload = multer({ storage: multer.memoryStorage() }); // Importation du co
 
 const router = Router();
 
-router.put("/update-asso", upload.single("logo"), updateAsso); // Route qui appelle la fonction du contrôleur
+router.put("/update-asso", upload.single("logo"), profilUpdate); // Route qui appelle la fonction du contrôleur
 router.post("/profilupdate", profilUpdate); // Route qui appelle la fonction du contrôleur
 router.get("/asso-details", getAssoDetails); // Renvoie les details de l'asso
 router.delete("/delete", deleteAssoProfil); // Route qui supprime l'asso

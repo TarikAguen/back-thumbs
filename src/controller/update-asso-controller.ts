@@ -43,11 +43,14 @@ export const updateAsso = async (req: Request, res: Response) => {
     logoUrl = uploadResult.Location;
   }
   try {
+    let hashedPassword = undefined;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10); // Hasher le nouveau mot de passe si fourni
+    }
     const updatedUser = await Asso.findByIdAndUpdate(
       userId,
       {
         email,
-        password,
         nameasso,
         siret,
         logo: logoUrl,
@@ -60,6 +63,7 @@ export const updateAsso = async (req: Request, res: Response) => {
         address,
         creationdate,
         interests,
+        ...(hashedPassword && { password: hashedPassword }),
       },
       { new: true }
     );
@@ -100,7 +104,7 @@ export const updateAsso = async (req: Request, res: Response) => {
   }
 };
 
-// post update asso
+// put update asso
 export const profilUpdate = async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
   const {
