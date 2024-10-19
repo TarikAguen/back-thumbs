@@ -119,10 +119,13 @@ export const getConversationsWithLastMessage = async (
       },
     ]);
 
+    // Vérification si aucune conversation trouvée
+    if (messages.length === 0) {
+      return res.status(200).json({ message: "Aucune conversation trouvée." });
+    }
+
     // Récupérer les informations des utilisateurs ou associations avec qui les conversations ont eu lieu
     const conversationIds = messages.map((msg) => msg._id);
-
-    // Trouver les utilisateurs et associations
     const users = await User.find({ _id: { $in: conversationIds } });
     const associations = await Asso.find({ _id: { $in: conversationIds } });
 
