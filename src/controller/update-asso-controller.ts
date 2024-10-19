@@ -122,53 +122,65 @@ export const profilUpdate = async (req: Request, res: Response) => {
   try {
     let hashedPassword = undefined;
     if (password) {
-      hashedPassword = await bcrypt.hash(password, 10);
+      hashedPassword = await bcrypt.hash(password, 10); // Hasher le nouveau mot de passe si fourni
     }
-    const postUser = await Asso.findByIdAndUpdate(
-      userId,
-      {
-        email,
-        nameasso,
-        siret,
-        logo,
-        description,
-        website,
-        telephone,
-        city,
-        postalcode,
-        address,
-        creationdate,
-        interests,
-        ...(hashedPassword && { password: hashedPassword }),
-      },
-      { new: true }
-    );
+
+    // Créer l'objet de mise à jour de façon conditionnelle
+    const updateData = {
+      email,
+      nameasso,
+      siret,
+      logo,
+      description,
+      website,
+      telephone,
+      city,
+      postalcode,
+      address,
+      creationdate,
+      interests,
+      ...(hashedPassword && { password: hashedPassword }), // N'ajouter que si le mot de passe est défini
+    };
+
     let logoUrl = undefined;
 
-    // if file uploaded
+    // Gestion du téléchargement de fichier si un logo est fourni
     if (req.file) {
       const params = {
         Bucket: process.env.S3_BUCKET_NAME!,
         Key: `${Date.now()}-${req.file.originalname}`,
         Body: req.file.buffer,
         ContentType: req.file.mimetype,
-        // ACL: "public-read", // Permettre un accès public à la photo
       };
 
       const uploadResult = await s3.upload(params).promise();
       logoUrl = uploadResult.Location;
     }
 
+    // Si un logo a été mis à jour, ajouter la nouvelle URL du logo
+    if (logoUrl) {
+      updateData.logo = logoUrl;
+    }
+
+    // Mettre à jour l'association avec les nouvelles données
+    const postUser = await Asso.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
+
     if (!postUser) {
-      return res.status(404).send("Asso not found");
+      return res.status(404).send("Association non trouvée");
     }
 
     res.json({
-      message: "Asso updated successfully",
+      message: "Association mise à jour avec succès",
       user: postUser,
     });
   } catch (err) {
-    res.status(500).send("Error updating user");
+    console.error(
+      "Erreur lors de la mise à jour du profil de l'association:",
+      err
+    );
+    res.status(500).send("Erreur lors de la mise à jour de l'association");
   }
 };
 export const getAssoDetails = async (req: Request, res: Response) => {
