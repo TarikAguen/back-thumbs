@@ -61,7 +61,7 @@ export const sendMessage = async (req: Request, res: Response) => {
 };
 
 export const getMessages = async (req: Request, res: Response) => {
-  const currentUserId = req.user.id;
+  const currentUserId = req.params; // ID de l'utilisateur authentifié via JWT
 
   try {
     // Récupérer seulement les messages où l'utilisateur est impliqué
