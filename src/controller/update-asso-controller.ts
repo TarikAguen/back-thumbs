@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import geocodeAddress from "../config/geocode";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import Event from "../models/Event";
 
 // put update photo
 export const updateAsso = async (req: Request, res: Response) => {
@@ -119,11 +120,14 @@ export const profilUpdate = async (req: Request, res: Response) => {
   } = req.body;
 
   try {
+    let hashedPassword = undefined;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
     const postUser = await Asso.findByIdAndUpdate(
       userId,
       {
         email,
-        password,
         nameasso,
         siret,
         logo,
@@ -135,6 +139,7 @@ export const profilUpdate = async (req: Request, res: Response) => {
         address,
         creationdate,
         interests,
+        ...(hashedPassword && { password: hashedPassword }),
       },
       { new: true }
     );
@@ -181,25 +186,28 @@ export const getAssoDetails = async (req: Request, res: Response) => {
   }
 };
 
-// Supprimer asso profil
+// Asso deletion
 export const deleteAssoProfil = async (req: Request, res: Response) => {
   const userId = res.locals.user.userId;
 
   try {
-    //check si user est une asso
+    // verify if this user is an asso existing
     const asso = await Asso.findById(userId);
     if (!asso) {
       return res.status(404).send("Association non trouvée");
     }
 
-    // Supprimer l'association
+    // deletion of event when organisator is our asso
+    await Event.deleteMany({ organisator: userId });
+
+    // supression de l'asso
     const deletedAsso = await Asso.findByIdAndDelete(userId);
     if (!deletedAsso) {
       return res.status(404).send("Association non trouvée");
     }
 
-    res.send("Association supprimée avec succès");
-  } catch (err) {
+    res.send("Association et événements associés supprimés avec succès");
+  } catch (err: any) {
     console.error(err);
     res.status(500).send("Erreur lors de la suppression de l'association");
   }
