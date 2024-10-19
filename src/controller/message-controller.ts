@@ -8,15 +8,23 @@ export const sendMessage = async (req: Request, res: Response) => {
     const { senderId, receiverId, content } = req.body;
 
     // Tente de trouver l'expéditeur et le destinataire dans les utilisateurs ou les associations
-    const sender =
-      // (await User.findById(senderId)) || (await Asso.findById(senderId));
-      await User.findById(senderId);
-    const receiver =
-      // (await User.findById(receiverId)) || (await Asso.findById(receiverId));
-      await User.findById(receiverId);
+    // const sender =
+    //   (await User.findById(senderId)) || (await Asso.findById(senderId));
+    // const receiver =
+    //   (await User.findById(receiverId)) || (await Asso.findById(receiverId));
+    let sender;
+    let receiver;
+    sender = await User.findById(senderId);
+    if (!sender) {
+      sender = await Asso.findById(senderId);
+    }
+    receiver = await User.findById(receiverId);
+    if (!receiver) {
+      receiver = await Asso.findById(receiverId);
+    }
+
     const senderModel = sender instanceof User ? "User" : "Asso";
     const receiverModel = receiver instanceof User ? "User" : "Asso";
-
     if (!sender || !receiver) {
       return res.status(404).send({ message: "Sender or receiver not found" });
     }
@@ -32,8 +40,8 @@ export const sendMessage = async (req: Request, res: Response) => {
     const savedMessage = await message.save();
     // Envoi du message via Socket.io
     req.app.get("io").emit("receive_message", {
-      sender,
-      receiver,
+      senderId,
+      receiverId,
       content,
       messageId: savedMessage._id, // transmet l'ID du message pour référence future
       sentAt: savedMessage.sentAt,
