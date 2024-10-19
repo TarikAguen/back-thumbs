@@ -84,41 +84,59 @@ export const getMessages = async (req: Request, res: Response) => {
   }
 };
 
-export const getConversations = async (req: Request, res: Response) => {
-  const currentUserId = res.locals.user?.userId; // L'utilisateur authentifié
+export const getConversationsWithLastMessage = async (
+  req: Request,
+  res: Response
+) => {
+  const currentUserId = res.locals.user?.userId;
 
   try {
     if (!currentUserId) {
       return res.status(401).send({ message: "Unauthorized access" });
     }
 
-    // Récupérer toutes les conversations où l'utilisateur est impliqué (comme sender ou receiver)
-    const messages = await Message.find({
-      $or: [{ sender: currentUserId }, { receiver: currentUserId }],
-    });
+    // Récupérer les conversations où l'utilisateur est soit l'expéditeur, soit le destinataire
+    const messages = await Message.aggregate([
+      {
+        $match: {
+          $or: [{ sender: currentUserId }, { receiver: currentUserId }],
+        },
+      },
+      {
+        $sort: { sentAt: -1 }, // Trier par date (du plus récent au plus ancien)
+      },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $eq: ["$sender", currentUserId] },
+              "$receiver",
+              "$sender",
+            ], // Grouper par l'autre utilisateur (receiver si currentUser est sender, sinon sender)
+          },
+          lastMessage: { $first: "$$ROOT" }, // Obtenir le dernier message pour chaque groupe
+        },
+      },
+    ]);
 
-    // Utiliser un Set pour éviter les doublons
-    const conversationIds = new Set<string>();
+    // Récupérer les informations des utilisateurs ou associations avec qui les conversations ont eu lieu
+    const conversationIds = messages.map((msg) => msg._id);
+    const users = await User.find({ _id: { $in: conversationIds } });
+    const associations = await Asso.find({ _id: { $in: conversationIds } });
 
-    messages.forEach((msg) => {
-      if (msg.sender.toString() !== currentUserId) {
-        conversationIds.add(msg.sender.toString());
-      }
-      if (msg.receiver.toString() !== currentUserId) {
-        conversationIds.add(msg.receiver.toString());
-      }
+    // Fusionner les utilisateurs et les associations dans une seule liste
+    const conversations = [...users, ...associations].map((person) => {
+      const lastMessage = messages.find(
+        (msg) => msg._id.toString() === person._id.toString()
+      );
+      return {
+        person,
+        lastMessage: lastMessage
+          ? lastMessage.lastMessage.content
+          : "Pas de message",
+        sentAt: lastMessage ? lastMessage.lastMessage.sentAt : null,
+      };
     });
-
-    // Récupérer les informations des utilisateurs et associations
-    const users = await User.find({
-      _id: { $in: Array.from(conversationIds) },
-    });
-    const associations = await Asso.find({
-      _id: { $in: Array.from(conversationIds) },
-    });
-
-    // Fusionner les résultats utilisateurs et associations
-    const conversations = [...users, ...associations];
 
     res.status(200).json(conversations);
   } catch (error) {
