@@ -61,11 +61,12 @@ export const sendMessage = async (req: Request, res: Response) => {
 };
 
 export const getMessages = async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const currentUserId = req.user.id;
 
   try {
+    // Récupérer seulement les messages où l'utilisateur est impliqué
     const messages = await Message.find({
-      $or: [{ sender: userId }, { receiver: userId }],
+      $or: [{ sender: currentUserId }, { receiver: currentUserId }],
     }).populate("sender receiver", "email nameasso");
 
     res.json(messages);
