@@ -23,6 +23,8 @@ const io = new SocketIOServer(server, {
     methods: ["GET", "POST"],
   },
 });
+// Attacher io à Express
+app.set("io", io);
 // Configuration de Socket.IO
 io.on("connection", (socket: Socket) => {
   console.log("New client connected");
