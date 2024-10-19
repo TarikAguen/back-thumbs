@@ -7,34 +7,30 @@ export const sendMessage = async (req: Request, res: Response) => {
   try {
     const { senderId, receiverId, content } = req.body;
 
+    console.log("Received senderId:", senderId);
+    console.log("Received receiverId:", receiverId);
+
     // Tente de trouver l'expéditeur et le destinataire dans les utilisateurs ou les associations
-    // const sender =
-    //   (await User.findById(senderId)) || (await Asso.findById(senderId));
-    // const receiver =
-    //   (await User.findById(receiverId)) || (await Asso.findById(receiverId));
-    let sender;
-    let receiver;
-    sender = await User.findById(senderId);
+    let sender = await User.findById(senderId);
     if (!sender) {
       sender = await Asso.findById(senderId);
     }
-    receiver = await User.findById(receiverId);
+    console.log("Sender found:", sender);
+
+    let receiver = await User.findById(receiverId);
     if (!receiver) {
       receiver = await Asso.findById(receiverId);
+    }
+    console.log("Receiver found:", receiver);
+
+    if (!sender || !receiver) {
+      return res.status(404).send({
+        message: `Sender or receiver not found - Sender: ${sender}, Receiver: ${receiver}`,
+      });
     }
 
     const senderModel = sender instanceof User ? "User" : "Asso";
     const receiverModel = receiver instanceof User ? "User" : "Asso";
-    if (!sender || !receiver) {
-      return res.status(404).send({
-        message:
-          "Sender or receiver not found" +
-          sender +
-          receiver +
-          senderId +
-          receiverId,
-      });
-    }
 
     const message = new Message({
       sender: senderId,
@@ -45,12 +41,12 @@ export const sendMessage = async (req: Request, res: Response) => {
     });
 
     const savedMessage = await message.save();
-    // Envoi du message via Socket.io
+
     req.app.get("io").emit("receive_message", {
       senderId,
       receiverId,
       content,
-      messageId: savedMessage._id, // transmet l'ID du message pour référence future
+      messageId: savedMessage._id,
       sentAt: savedMessage.sentAt,
     });
 
@@ -60,7 +56,9 @@ export const sendMessage = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error sending message:", error);
-    res.status(500).send({ message: "Error sending message", error });
+    res
+      .status(500)
+      .send({ message: "Error sending message", error: error.message });
   }
 };
 
