@@ -369,3 +369,26 @@ export const getgAssoById = async (req: Request, res: Response) => {
     res.status(500).send("Erreur lors de la récupération de l'asso");
   }
 };
+
+// Fonction pour récupérer tous les événements organisés par une association spécifique
+export const getOrganizedEventsById = async (req: Request, res: Response) => {
+  const assoId = req.params.assoId;
+  try {
+    // Rechercher tous les event où l'assoc avec l'ID donné est l'organisator
+    const events = await Event.find({ organisator: assoId });
+
+    if (events.length === 0) {
+      return res
+        .status(404)
+        .send("Aucun événement trouvé pour cette association");
+    }
+
+    res.json({
+      message: "Événements organisés récupérés avec succès",
+      events,
+    });
+  } catch (err) {
+    console.error("Erreur lors de la récupération des événements:", err);
+    res.status(500).send("Erreur lors de la récupération des événements");
+  }
+};

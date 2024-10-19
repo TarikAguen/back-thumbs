@@ -7,6 +7,7 @@ import {
   deleteAssoProfil,
   getAllAsso,
   getgAssoById,
+  getOrganizedEventsById,
 } from "../controller/update-asso-controller";
 import { filterAssos } from "../controller/filter-asso-controller";
 const upload = multer({ storage: multer.memoryStorage() }); // Importation du contrôleur
@@ -20,5 +21,7 @@ router.delete("/delete", deleteAssoProfil); // Route qui supprime l'asso
 router.get("/getAllAsso", getAllAsso); // Route qui renvoie toutes les asso
 router.get("/getDetails-asso/:id", getgAssoById);
 router.get("/filter", filterAssos);
+// Nouvelle route pour récupérer les événements organisés par une asso spécifique via son ID
+router.get("/organized-events/:assoId", getOrganizedEventsById);
 
 export default router;
