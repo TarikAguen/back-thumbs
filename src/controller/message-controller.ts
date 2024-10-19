@@ -61,22 +61,27 @@ export const sendMessage = async (req: Request, res: Response) => {
 };
 
 export const getMessages = async (req: Request, res: Response) => {
-  const currentUserId = req.user.id; // L'ID de l'utilisateur authentifié, extrait du JWT
+  const currentUserId = res.locals.user?.userId; // Utiliser res.locals.user pour récupérer l'ID de l'utilisateur authentifié
+  const { userId } = req.params; // ID du contact avec qui l'utilisateur est en conversation
 
   try {
-    const { userId } = req.params; // ID du contact (autre utilisateur avec qui l'utilisateur est en conversation)
+    if (!currentUserId) {
+      return res.status(401).send({ message: "Unauthorized access" });
+    }
 
-    // Récupérer seulement les messages où l'utilisateur authentifié est soit l'expéditeur soit le destinataire
+    // Récupérer seulement les messages où l'utilisateur authentifié est impliqué
     const messages = await Message.find({
       $or: [
         { sender: currentUserId, receiver: userId },
-        { sender: userId, receiver: currentUserId },
+        { sender: userId, receiver: currentUserId }
       ],
     }).populate("sender receiver", "email nameasso");
 
     res.json(messages);
   } catch (err) {
-    console.error(err);
+    console.error("Error retrieving messages:", err);
     res.status(500).send("Error retrieving messages");
   }
+};
+
 };
