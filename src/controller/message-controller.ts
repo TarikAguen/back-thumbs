@@ -16,7 +16,9 @@ export const sendMessage = async (req: Request, res: Response) => {
     const receiverModel = receiver instanceof User ? "User" : "Asso";
 
     if (!sender || !receiver) {
-      return res.status(404).send({ message: "Sender or receiver not found" });
+      return res
+        .status(404)
+        .send({ message: "Sender or receiver not found" + sender + receiver });
     }
 
     const message = new Message({
