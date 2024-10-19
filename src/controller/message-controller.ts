@@ -73,7 +73,7 @@ export const getMessages = async (req: Request, res: Response) => {
     const messages = await Message.find({
       $or: [
         { sender: currentUserId, receiver: userId },
-        { sender: userId, receiver: currentUserId }
+        { sender: userId, receiver: currentUserId },
       ],
     }).populate("sender receiver", "email nameasso");
 
@@ -82,6 +82,4 @@ export const getMessages = async (req: Request, res: Response) => {
     console.error("Error retrieving messages:", err);
     res.status(500).send("Error retrieving messages");
   }
-};
-
 };
