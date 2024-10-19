@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import Message from "../models/Message";
 import User from "../models/User";
 import Asso from "../models/Asso";
+import mongoose from "mongoose";
 export const sendMessage = async (req: Request, res: Response) => {
   try {
     const { senderId, receiverId, content } = req.body;
@@ -88,18 +89,21 @@ export const getConversationsWithLastMessage = async (
   req: Request,
   res: Response
 ) => {
-  const currentUserId = res.locals.user?.userId;
+  const currentUserId = res.locals.user?.userId; // Utiliser res.locals.user pour récupérer l'ID de l'utilisateur authentifié
 
   try {
     if (!currentUserId) {
       return res.status(401).send({ message: "Unauthorized access" });
     }
 
-    // Récupérer les conversations où l'utilisateur est soit l'expéditeur, soit le destinataire
+    // Agrégation pour obtenir les conversations avec le dernier message
     const messages = await Message.aggregate([
       {
         $match: {
-          $or: [{ sender: currentUserId }, { receiver: currentUserId }],
+          $or: [
+            { sender: new mongoose.Types.ObjectId(currentUserId) },
+            { receiver: new mongoose.Types.ObjectId(currentUserId) },
+          ],
         },
       },
       {
@@ -109,10 +113,10 @@ export const getConversationsWithLastMessage = async (
         $group: {
           _id: {
             $cond: [
-              { $eq: ["$sender", currentUserId] },
+              { $eq: ["$sender", new mongoose.Types.ObjectId(currentUserId)] },
               "$receiver",
               "$sender",
-            ], // Grouper par l'autre utilisateur (receiver si currentUser est sender, sinon sender)
+            ], // Grouper par l'autre utilisateur
           },
           lastMessage: { $first: "$$ROOT" }, // Obtenir le dernier message pour chaque groupe
         },
