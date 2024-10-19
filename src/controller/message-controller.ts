@@ -9,9 +9,11 @@ export const sendMessage = async (req: Request, res: Response) => {
 
     // Tente de trouver l'expéditeur et le destinataire dans les utilisateurs ou les associations
     const sender =
-      (await User.findById(senderId)) || (await Asso.findById(senderId));
+      // (await User.findById(senderId)) || (await Asso.findById(senderId));
+      await User.findById(senderId);
     const receiver =
-      (await User.findById(receiverId)) || (await Asso.findById(receiverId));
+      // (await User.findById(receiverId)) || (await Asso.findById(receiverId));
+      await User.findById(receiverId);
     const senderModel = sender instanceof User ? "User" : "Asso";
     const receiverModel = receiver instanceof User ? "User" : "Asso";
 
