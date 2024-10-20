@@ -138,12 +138,14 @@ export const getConversationsWithLastMessage = async (
       if (person.firstName && person.lastName) {
         return {
           type: "user",
+          id: person._id,
           name: `${person.firstName} ${person.lastName}`,
           photo: person.photo || null,
         };
       } else if (person.nameasso) {
         return {
           type: "asso",
+          id: person._id,
           name: person.nameasso,
           photo: person.logo || null,
         };
@@ -153,7 +155,9 @@ export const getConversationsWithLastMessage = async (
 
     // Fusionner les utilisateurs et les associations dans une seule liste
     const conversations = [...users, ...associations].map((person) => {
-      const lastMessage = messages.find((msg) => msg._id === person._id);
+      const lastMessage = messages.find(
+        (msg) => String(msg._id) === String(person._id)
+      ); // Assurez-vous que les deux côtés sont comparés en tant que chaînes
 
       const personInfo = getPersonInfo(person);
 
