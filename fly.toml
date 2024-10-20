@@ -1,19 +1,22 @@
-app = "back-thumbs"
+# fly.toml app configuration file generated for back-thumbs on 2024-10-20T03:57:02Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'back-thumbs'
+primary_region = 'cdg'
 
 [build]
-  image = "node:18"
 
-[env]
-  PORT = "3001"
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
 
-[[services]]
-  internal_port = 3001
-  protocol = "tcp"
-
-  [[services.ports]]
-    handlers = ["http"]
-    port = 80
-
-  [[services.ports]]
-    handlers = ["tls", "http"]
-    port = 443
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
