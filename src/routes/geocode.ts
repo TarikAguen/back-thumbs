@@ -2,14 +2,14 @@ import { Router } from "express";
 import {
   updateLocation,
   findNearbyUsers,
-} from "../controller/geocode-controller"; // Assure-toi que les noms de fonctions sont corrects
+} from "../controller/geocode-controller";
 
 const router = Router();
 
-// Route pour mettre à jour la localisation de l'utilisateur
+// Route pour maj location user
 router.post("/update-location", updateLocation);
 
-// Route pour trouver des utilisateurs à proximité
+// Route pour trouver à proximité de l'user 
 router.get("/nearby-users", findNearbyUsers);
 
 export default router;
