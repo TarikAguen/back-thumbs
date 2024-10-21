@@ -4,7 +4,7 @@ import Event from "../models/Event";
 import Asso from "../models/Asso";
 import geocodeAddress from "../config/geocode";
 
-// Fonction pour mettre à jour la localisation d'un utilisateur
+// maj loc
 export async function updateLocation(req: Request, res: Response) {
   const { address } = req.body;
 
@@ -17,7 +17,7 @@ export async function updateLocation(req: Request, res: Response) {
   try {
     const { latitude, longitude } = await geocodeAddress(address);
 
-    const userId = res.locals.user.userId; // Utilisation de res.locals pour l'ID utilisateur
+    const userId = res.locals.user.userId;
     if (!userId) {
       return res.status(403).send("User not identified.");
     }
@@ -39,7 +39,7 @@ export async function updateLocation(req: Request, res: Response) {
   }
 }
 
-// Fonction pour trouver des utilisateurs à proximité d'une localisation
+// find  near user
 export async function findNearbyUsers(req: Request, res: Response) {
   const { longitude, latitude, radiusInKm } = req.query;
 
@@ -64,7 +64,7 @@ export async function findNearbyUsers(req: Request, res: Response) {
   }
 
   try {
-    const radiusInMeters = radius * 1000; // Convertir les kilomètres en mètres
+    const radiusInMeters = radius * 1000; // m to km
 
     const users = await User.find({
       location: {
@@ -113,7 +113,7 @@ export async function findNearbyUsers(req: Request, res: Response) {
           long +
           " lat : " +
           lat +
-          "rad:" +
+          "rd:" +
           radius
       );
   }
